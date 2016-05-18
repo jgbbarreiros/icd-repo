@@ -28,8 +28,9 @@ public class ClientService extends Thread {
         this.connection = connection;
     }
 
-
     public void run() {
+    		
+		boolean reading = true;
 
         BufferedReader is = null;
         PrintWriter os    = null;
@@ -43,19 +44,20 @@ public class ClientService extends Thread {
             is = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             os = new PrintWriter(connection.getOutputStream(), true);
             ois = new ObjectInputStream(connection.getInputStream());
+            
             Document doc = null;
             try {
             	doc = (Document) ois.readObject();
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+    		} catch (ClassNotFoundException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		}
             try {
-				transformer = TransformerFactory.newInstance().newTransformer();
-				transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-			} catch (TransformerConfigurationException | TransformerFactoryConfigurationError e1) {
-				e1.printStackTrace();
-			}
+    			transformer = TransformerFactory.newInstance().newTransformer();
+    			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+    		} catch (TransformerConfigurationException | TransformerFactoryConfigurationError e1) {
+    			e1.printStackTrace();
+    		}
             
             try {
     			DOMSource source = new DOMSource(doc);
@@ -64,10 +66,19 @@ public class ClientService extends Thread {
     		} catch (TransformerException e) {
     			System.err.println(e.getMessage());
     		}
-            
-//            String inputLine = is.readLine();
-//            System.out.println("Recebi -> " + inputLine);
-//            os.println("@" + inputLine.toUpperCase());
+//	        while (reading) {
+//				String inputLine = null;
+//				try {
+//					inputLine = is.readLine();
+//					
+//				} catch (IOException e) {
+//					System.out.println("Client disconnected.");
+//					reading = false;
+//					continue;
+//				}
+//				System.out.println("Recebi -> " + inputLine);
+//				os.println("@" + inputLine.toUpperCase());
+//			}
         }
         catch (IOException e) {
             System.err.println("erro na ligaçao " + connection + ": " + e.getMessage());
@@ -81,5 +92,4 @@ public class ClientService extends Thread {
             } catch (IOException e) { }
         }
     }
-
 }

@@ -6,30 +6,28 @@ import java.net.Socket;
 
 public class Server {
 
-    public final static int DEFAULT_PORT = 5025; 
-    
-    
-    public static void main(String[] args) {
-        int port = DEFAULT_PORT; 
-        
-        ServerSocket serverSocket = null;
+	public final static int DEFAULT_PORT = 5025;
 
-        try {
-            serverSocket = new ServerSocket(port);
+	public static void main(String[] args) {
+		int port = DEFAULT_PORT;
 
-            Socket newSock    = null;
+		ServerSocket serverSocket = null;
 
-            while(true) {
-                System.out.println("Server listening on localhost:" + port + "..." );
+		try {
+			serverSocket = new ServerSocket(port);
 
-                newSock = serverSocket.accept(); 
+			Socket newSock = null;
 
-                Thread th = new ClientService(newSock);
-                th.start();
-            }
-        } 
-        catch (IOException e) {
-            System.err.println("Excepção no servidor: " + e);
-        }
-    }
+			while (true) {
+				System.out.println("Server listening on localhost:" + port + "...");
+
+				newSock = serverSocket.accept();
+
+				Thread th = new ClientService(newSock);
+				th.start();
+			}
+		} catch (IOException e) {
+			System.err.println("Excepï¿½ï¿½o no servidor: " + e);
+		}
+	}
 }
