@@ -8,51 +8,44 @@ import java.net.Socket;
 
 public abstract class Client {
 
-    public final static String DEFAULT_HOSTNAME = "localhost";
-    
-    public final static int DEFAULT_PORT = 5025; 
-    
-    
-    public void connect() {
+	public final static String DEFAULT_HOSTNAME = "localhost";
 
-        String host = DEFAULT_HOSTNAME;
-        int    port = DEFAULT_PORT;
+	public final static int DEFAULT_PORT = 5025;
 
-        System.out.println("-> " + host + ":" + port );
-        
-        Socket socket     = null;
-        BufferedReader is = null;
-        PrintWriter    os = null;
-        
-        try {
-            socket = new Socket(host, port);
+	public void connect() {
 
-            System.out.println("Ligação: " + socket);
+		String host = DEFAULT_HOSTNAME;
+		int port = DEFAULT_PORT;
 
-            os = new PrintWriter(socket.getOutputStream(), true); 
-            is = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		System.out.println("-> " + host + ":" + port);
 
-            //os.println("Olá mundo!!!");
-            //System.out.println("Recebi -> " + is.readLine());
-            request(os);
+		Socket socket = null;
+		BufferedReader is = null;
+		PrintWriter os = null;
 
-        } 
-        catch (IOException e) {
-            System.err.println("Erro na ligação " + e.getMessage());   
-        }
-        finally {
-            try {
-                if (os != null) os.close();
-                if (is != null) is.close();
-                if (socket != null ) socket.close();
-            }
-            catch (IOException e) { 
-            }
-        }
-    }
-    
-    public abstract void request(PrintWriter os);
+		try {
+			socket = new Socket(host, port);
+
+			System.out.println("Ligacao: " + socket);
+
+			os = new PrintWriter(socket.getOutputStream(), true);
+			is = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+			request(os);
+		} catch (IOException e) {
+			System.err.println("Erro na ligacao " + e.getMessage());
+		} finally {
+			try {
+				if (os != null)
+					os.close();
+				if (is != null)
+					is.close();
+				if (socket != null)
+					socket.close();
+			} catch (IOException e) {
+			}
+		}
+	}
+
+	public abstract void request(PrintWriter os);
 }
-
-
-
