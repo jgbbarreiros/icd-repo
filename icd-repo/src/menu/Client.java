@@ -3,6 +3,8 @@ package menu;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 
@@ -22,19 +24,23 @@ public abstract class Client {
         
         Socket socket     = null;
         BufferedReader is = null;
-        PrintWriter    os = null;
+        PrintWriter    pw = null;
+        OutputStream   os = null;
+        ObjectOutputStream oos = null;
         
         try {
             socket = new Socket(host, port);
 
             System.out.println("Ligação: " + socket);
 
-            os = new PrintWriter(socket.getOutputStream(), true); 
+            pw = new PrintWriter(socket.getOutputStream(), true); 
             is = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            os = socket.getOutputStream();
+            oos = new ObjectOutputStream(os);
 
             //os.println("Olá mundo!!!");
             //System.out.println("Recebi -> " + is.readLine());
-            request(os);
+            request(pw, oos);
 
         } 
         catch (IOException e) {
@@ -51,7 +57,7 @@ public abstract class Client {
         }
     }
     
-    public abstract void request(PrintWriter os);
+    public abstract void request(PrintWriter os, ObjectOutputStream oos);
 }
 
 
