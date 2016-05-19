@@ -81,7 +81,7 @@ public class ClientService extends Thread {
 //			}
         }
         catch (IOException e) {
-            System.err.println("erro na ligaçao " + connection + ": " + e.getMessage());
+            System.err.println("Error in connection " + connection + ": " + e.getMessage());
         }
         finally {
             try {
