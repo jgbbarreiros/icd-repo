@@ -1,8 +1,8 @@
 package menu;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.util.Scanner;
 
 import org.w3c.dom.Document;
@@ -15,7 +15,7 @@ public class Waiter extends Client {
 	private Element items;
 	private Element menu;
 
-	public void request(PrintWriter os, ObjectOutputStream oos) {
+	public void request(ObjectInputStream ois, ObjectOutputStream oos) {
 
 		FileManager fileManager = new FileManager();
 		Document doc = fileManager.blank();
@@ -32,8 +32,7 @@ public class Waiter extends Client {
 		rootElement.appendChild(menu);
 
 		Scanner keyboard = new Scanner(System.in);
-		boolean exit = false;
-		while (!exit) {
+		while (!connected) {
 			System.out.println("Choose a command:\n");
 			System.out.println("\t 1. Check orders");
 			System.out.println("\t 2. Modify status.");
@@ -43,25 +42,17 @@ public class Waiter extends Client {
 			switch (keyboard.nextInt()) {
 
 			case 1:
-				os.println("I want to check the orders.");
+				orders();
 				break;
 			case 2:
-				os.println("I want to modify a status.");
+				update();
 				break;
 			case 3:
-				os.println("I want to check aniversary.");
+				aniversary();
 				break;
 			case 4:
-				os.println("I'm leaving.");
-				exit = true;
+				connected = true;
 				System.out.println("Bye");
-				break;
-			case 0:
-				try {
-					oos.writeObject(doc);
-				} catch (IOException e) {
-					System.out.println("Error sending document.");
-				}
 				break;
 			default:
 				System.out.println("Please choose a valid option.");
@@ -75,15 +66,15 @@ public class Waiter extends Client {
 		new Waiter().connect();
 	}
 
-	private void checkOrders() {
+	private void orders() {
 
 	}
 
-	public void modifyOrder() {
+	public void update() {
 
 	}
 
-	public void checkAniversary() {
+	public void aniversary() {
 
 	}
 
