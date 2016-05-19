@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pedido id="">
+
+	<menu>
+	</menu>
+
+<item>
+	<item itemID="polvo1"><
+		<nome>Arrox de Polco</nome>
+		<ingr ingrRef="">
+		</ingr>
+	</item>
+</item>
+	<menu>
+		<workDay>
+			<lunch>
+				<item itemRef="polvo1">3 conas moles</item>
+				<item itemRef="arroz doce">2 teclados razer</item>
+				<item itemRef="asd">4 videos bondage para acompanahr</item>
+				<item itemRef="asd">price</item>
+			</lunch>
+			<dinner>
+				<item itemRef="asd">price</item>
+				<item itemRef="asd">price</item>
+				<item itemRef="asd">price</item>
+				<item itemRef="asd">price</item>
+			</dinner>
+		</workDay>
+		<restDay>
+			<lunch>
+			</lunch>
+			<dinner>
+			</dinner>
+		</restDay>
+	</menu>
+
+	<order>
+		<itens>
+			<item refId="1"></item>
+			<item refId="1"></item>
+		</itens>
+	</order>
+
+</pedido>
+
+<order clientid="">
+	<menu day="workDay">
+		<lunch>
+			<item/>
+			<item/>
+		</lunch>
+	</menu>
+	<request>
+		<item ref="^^"/>
+		<item ref="^^"/>
+		<item ref="^^"/>
+		<status>
+		</status>
+		<sum>
+			preco
+		</sum>
+	</request>
+	<request>
+		<item ref="^^"/>
+		<item ref="^^"/>
+		<item ref="^^"/>
+		<status>
+		</status>
+		<sum>
+			preco
+		</sum>
+	</request>
+</order>
+
+<order clientid="">
+	<menu day="workDay">
+		<lunch>
+			<item/>
+			<item/>
+		</lunch>
+	</menu>
+	<request>
+		<item ref="^^"/>
+		<item ref="^^"/>
+		<item ref="^^"/>
+		<status>
+		</status>
+		<sum>
+			preco
+		</sum>
+	</request>
+	<request>
+		<item ref="^^"/>
+		<item ref="^^"/>
+		<item ref="^^"/>
+		<status>
+		</status>
+		<sum>
+			preco
+		</sum>
+	</request>
+</order>
+
+<response>
+	<print>O seu pedido foi feito com su</print>
+</response>
+
+<clients>
+	<client id="47" date="" meal="1">
+		<divida></divida>
+	</client>
+	<client id="47">
+		<request status="delivered">
+			<item id=""></item>
+			<item id=""></item>
+			<item id=""></item>
+		</request>
+		<request status="notReady">
+			<item id=""></item>
+			<item id=""></item>
+			<item id=""></item>
+		</request>
+		<divida></divida>
+	</client>
+</clients>
+
+
