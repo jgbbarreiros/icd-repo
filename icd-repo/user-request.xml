@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<request>
+
+  <menu language="eng||por||fr" type="launch||dinner" weekday="Yes||No"/>
+  
+  <order>
+    <item itemRef="number"></item>
+    <item itemRef="number"></item>
+    <item itemRef="number"></item>
+  </order>
+  
+  <check>
+    <status/>
+    <debt/>
+  </check>
+
+  <pay/>
+
+  <leave/>
+
+</request>

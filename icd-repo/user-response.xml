@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<response>
+
+  <!-- list of items to display -->
+
+  <menu>
+    <item itemRef="number" name="name">price</item>
+    <item itemRef="number" name="name">price</item>
+    <item itemRef="number" name="name">price</item>
+    <item itemRef="number" name="name">price</item>
+  </menu>
+
+  <!-- print something -->
+
+  <print>Some String</print>
+
+  <!-- check -->
+
+  <check>
+    <order status="">
+      <item itemRef="number"></item>
+      <item itemRef="number"></item>
+      <item itemRef="number"></item>
+    </order>
+    <order status="">
+      <item itemRef="number"></item>
+      <item itemRef="number"></item>
+    </order>
+    <debt/>
+  </check>
+
+</response>

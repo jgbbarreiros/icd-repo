@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<clients>
+	<client id="47">
+		<order status="delivered">
+			<item itemRef=""></item>
+			<item itemRef=""></item>
+			<item itemRef=""></item>
+		</order>
+		<order status="notReady">
+			<item itemRef=""></item>
+			<item itemRef=""></item>
+			<item itemRef=""></item>
+		</order>
+		<debt></debt>
+	</client>
+</clients>
