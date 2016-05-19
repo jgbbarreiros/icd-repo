@@ -31,20 +31,17 @@ public abstract class Client {
         try {
             socket = new Socket(host, port);
 
-            System.out.println("Ligação: " + socket);
+            System.out.println("Ligacao: " + socket);
 
             pw = new PrintWriter(socket.getOutputStream(), true); 
             is = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             os = socket.getOutputStream();
             oos = new ObjectOutputStream(os);
-
-            //os.println("Olá mundo!!!");
-            //System.out.println("Recebi -> " + is.readLine());
+            
             request(pw, oos);
-
         } 
         catch (IOException e) {
-            System.err.println("Erro na ligação " + e.getMessage());   
+            System.err.println("Error in connection " + e.getMessage());   
         }
         finally {
             try {

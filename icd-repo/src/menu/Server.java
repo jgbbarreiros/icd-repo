@@ -27,7 +27,7 @@ public class Server {
 				th.start();
 			}
 		} catch (IOException e) {
-			System.err.println("Excep��o no servidor: " + e);
+			System.err.println("Exception in server: " + e);
 		}
 	}
 }
