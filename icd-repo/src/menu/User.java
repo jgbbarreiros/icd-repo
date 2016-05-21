@@ -140,8 +140,22 @@ public class User extends Client {
 		}
 	}
 
-	private void check() {
+	private void check() throws IOException, ClassNotFoundException {
+		Element check = doc.createElement("check");
+		requests.appendChild(check);
 		
+		Element status = doc.createElement("status");
+		check.appendChild(status);
+		
+		Element debt = doc.createElement("debt");
+		check.appendChild(debt);
+		
+		oos.writeObject(doc);
+		showCheck((Document) ois.readObject());
+	}
+	
+	private void showCheck(Document check) {
+		// TODO after check response
 	}
 
 	private void pay() {
