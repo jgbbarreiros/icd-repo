@@ -8,80 +8,63 @@ import java.util.Scanner;
 import org.w3c.dom.Element;
 
 public class User extends Client {
-	private Element rootElement;
-	private Element ingredients;
-	private Element items;
-	private Element menu;
 
+	private Element menu;
 	private Calendar calendar;
 	private Date date;
 	private int year;
 	private int month;
 	private int day;
 	private int hour;
-	private boolean weekday;
+	private String weekday;
 	private String language;
 	private Scanner keyboard;
-	private boolean lunch;
+	private String type;
 
 	public User() {
+		super();
 		keyboard = new Scanner(System.in);
 		// get var type >> var.getClass().getName();
 		date = new Date();
 		calendar = Calendar.getInstance();
 		calendar.setTime(date);
 		language = "eng";
-		weekday = calendar.get(Calendar.DAY_OF_WEEK) > 5 ? false : true;
+		weekday = calendar.get(Calendar.DAY_OF_WEEK) > 5 ? "yes" : "no";
+		type = calendar.get(Calendar.HOUR_OF_DAY) < 19 ? "lunch" : "dinner";
 	}
 
 	@Override
 	public void request() {
-		FileManager fileManager = new FileManager();
-		doc = fileManager.blank();
-		rootElement = doc.createElement("restaurant");
-		doc.appendChild(rootElement);
-
-		ingredients = doc.createElement("ingredients");
-		rootElement.appendChild(ingredients);
-
-		items = doc.createElement("items");
-		rootElement.appendChild(items);
-
-		menu = doc.createElement("menu");
-		rootElement.appendChild(menu);
 
 		while (connected) {
-			System.out.println("\n============================");
-			System.out.println(calendar.getTime());
-			System.out.println("\nChoose a command:");
-			System.out.println("\t1. Request Menu");
-			System.out.println("\t2. Order.");
-			System.out.println("\t3. Check order");
-			System.out.println("\t4. Pay order.");
-			System.out.println("\t5. Leave");
-			System.out.print(">> ");
-			switch (keyboard.nextInt()) {
-			case 1:
-				setDate();
-				menu();
-				break;
-			case 2:
-				order();
-				break;
-			case 3:
-				check();
-				break;
-			case 4:
-				pay();
-				break;
-			case 5:
-				leave();
+			try {
+				System.out.println("\n============================");
+				System.out.println(calendar.getTime());
+				menuOptions(new String[] { "Request Menu", "Order", "Check order", "Pay order", "Leave" });
+				switch (keyboard.nextInt()) {
+				case 1:
+					menu();
+					break;
+				case 2:
+					order();
+					break;
+				case 3:
+					check();
+					break;
+				case 4:
+					pay();
+					break;
+				case 5:
+					leave();
+					connected = false;
+					System.out.println("Bye");
+					break;
+				default:
+					System.out.println("Please choose a valid option.");
+					break;
+				}
+			} catch (IOException e) {
 				connected = false;
-				System.out.println("Bye");
-				break;
-			default:
-				System.out.println("Please choose a valid option.");
-				break;
 			}
 		}
 		keyboard.close();
@@ -89,20 +72,29 @@ public class User extends Client {
 
 	public static void main(String[] args) {
 		User user = new User();
+		// user.request();
 		user.connect();
 	}
 
-	private void menu(/* String language, String type, boolean weekday */) {
+	private void menu() throws IOException {
 
+		menuOptions(new String[] { "Current date", "Other date", "Back" });
+		switch (keyboard.nextInt()) {
+		case 1:
+			break;
+		case 2:
+			setDate();
+			break;
+		case 3:
+			return;
+		default:
+			System.out.println("Please choose a valid option.");
+			break;
+		}
+		requestMenu();
 	}
 
 	private void setDate() {
-		System.out.println("\nChoose a command:");
-		System.out.println("\t1. Request Menu");
-		System.out.println("\t2. Order.");
-		System.out.println("\t5. back");
-		System.out.print(">> ");
-
 		System.out.print("year = ");
 		year = keyboard.nextInt();
 		System.out.print("month = ");
@@ -111,16 +103,18 @@ public class User extends Client {
 		day = keyboard.nextInt();
 		System.out.print("hour = ");
 		hour = keyboard.nextInt();
-
 		calendar.set(year, month, day, hour, 0);
-		System.out.println(calendar.getTime());
+		weekday = calendar.get(Calendar.DAY_OF_WEEK) > 5 ? "yes" : "no";
+		type = hour < 19 ? "lunch" : "dinner";
+	}
 
-		weekday = calendar.get(Calendar.DAY_OF_WEEK) > 5 ? false : true;
-		lunch = hour < 19 ? true : false;
-
-		System.out.println("weeday: " + weekday);
-		System.out.println("lunch: " + lunch);
-
+	private void requestMenu() throws IOException {
+		menu = doc.createElement("ingredients");
+		menu.setAttribute("language", language);
+		menu.setAttribute("type", type);
+		menu.setAttribute("weekday", weekday);
+		requests.appendChild(menu);
+		oos.writeObject(doc);
 	}
 
 	private void order() {
@@ -129,6 +123,15 @@ public class User extends Client {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void menuOptions(String[] options) {
+		System.out.println("\nChoose a command:");
+		int number = 1;
+		for (String option : options) {
+			System.out.println("\t" + number++ + ". " + option);
+		}
+		System.out.print(">> ");
 	}
 
 	private void check() {

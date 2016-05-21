@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 public abstract class Client {
 
@@ -16,16 +17,20 @@ public abstract class Client {
 	protected ObjectInputStream ois = null;
 	protected ObjectOutputStream oos = null;
 	protected boolean connected = true;
+	protected Element requests;
 
 	public Client() {
-
+		FileManager fileManager = new FileManager();
+		doc = fileManager.blank();
+		requests = doc.createElement("requests");
+		doc.appendChild(requests);
 	}
 
 	public void connect() {
 		try {
 			connection = new Socket(DEFAULT_HOSTNAME, DEFAULT_PORT);
 			oos = new ObjectOutputStream(connection.getOutputStream());
-			// ois = new ObjectInputStream(connection.getInputStream());
+			ois = new ObjectInputStream(connection.getInputStream());
 			request();
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
