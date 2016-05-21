@@ -5,10 +5,13 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
+
 import org.w3c.dom.Document;
 
 public abstract class Client {
-
+	protected XPath xPath = XPathFactory.newInstance().newXPath();
 	public final static String DEFAULT_HOSTNAME = "localhost";
 	public final static int DEFAULT_PORT = 5025;
 	protected Document doc = null;

@@ -16,7 +16,7 @@ public class ClientService extends Service {
 		String requestType = "";
 		while (connected) {
 			try {
-				requestType = getRequestType(doc);
+				requestType = getRequestType();
 				str = (String) ois.readObject();
 				System.out.println(str);
 				switch (requestType) {
@@ -48,7 +48,7 @@ public class ClientService extends Service {
 		closeStreams();
 	}
 
-	protected String getRequestType(Document doc) {
+	protected String getRequestType() {
 		return null;
 	}
 
