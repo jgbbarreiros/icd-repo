@@ -126,7 +126,7 @@ public class User extends Client {
 		// TODO after menu response
 	}
 
-	private void order() throws DOMException, XPathExpressionException {
+	private void order() throws DOMException, XPathExpressionException, IOException, ClassNotFoundException {
 		System.out.println("\nInsert item id's separated by commas:");
 		System.out.print(">> ");
 		keyboard.nextLine();
@@ -138,6 +138,12 @@ public class User extends Client {
 			expression = "//item[@itemRef='" + orderList[i] + "']/@name";
 			order.appendChild((Node) xPath.compile(expression).evaluate(menu, XPathConstants.NODE));
 		}
+		oos.writeObject(doc);
+		showOrder((Document) ois.readObject());
+	}
+	
+	private void showOrder(Document order) {
+		// TODO after order response
 	}
 
 	private void check() throws IOException, ClassNotFoundException {
@@ -158,12 +164,28 @@ public class User extends Client {
 		// TODO after check response
 	}
 
-	private void pay() {
-
+	private void pay() throws IOException, ClassNotFoundException {
+		Element pay = doc.createElement("pay");
+		requests.appendChild(pay);
+		
+		oos.writeObject(doc);
+		showPay((Document) ois.readObject());
+	}
+	
+	private void showPay(Document check) {
+		// TODO after pay response
 	}
 
-	private void leave() {
-
+	private void leave() throws IOException, ClassNotFoundException {
+		Element leave = doc.createElement("leave");
+		requests.appendChild(leave);
+		
+		oos.writeObject(doc);
+		showLeave((Document) ois.readObject());
+	}
+	
+	private void showLeave(Document check) {
+		// TODO after leave response
 	}
 	
 	private void menuOptions(String[] options) {
