@@ -5,6 +5,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -12,6 +15,7 @@ public abstract class Client {
 
 	public final static String DEFAULT_HOSTNAME = "localhost";
 	public final static int DEFAULT_PORT = 5025;
+	protected XPath xPath;
 	protected Document doc = null;
 	private Socket connection = null;
 	protected ObjectInputStream ois = null;
@@ -20,6 +24,7 @@ public abstract class Client {
 	protected Element requests;
 
 	public Client() {
+		xPath = XPathFactory.newInstance().newXPath();
 		FileManager fileManager = new FileManager();
 		doc = fileManager.blank();
 		requests = doc.createElement("requests");

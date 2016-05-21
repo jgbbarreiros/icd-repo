@@ -46,6 +46,7 @@ public abstract class Service extends Thread {
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		}
+		System.out.println("Client disconnected...");
 	}
 
 	public abstract void run();

@@ -12,13 +12,10 @@ public class ClientService extends Service {
 
 	public void run() {
 		openStreams();
-		String str = "";
 		String requestType = "";
 		while (connected) {
 			try {
-				requestType = getRequestType(doc);
-				str = (String) ois.readObject();
-				System.out.println(str);
+				requestType = getRequestType((Document) ois.readObject());
 				switch (requestType) {
 				case "menu":
 					menu();
@@ -37,23 +34,24 @@ public class ClientService extends Service {
 					connected = false;
 					break;
 				default:
+					System.out.println("Unkown request");
 					break;
 				}
 
 			} catch (Exception e) {
+				System.err.println(e.getMessage());
 				connected = false;
 			}
 		}
-
 		closeStreams();
 	}
 
-	protected String getRequestType(Document doc) {
-		return null;
+	protected String getRequestType(Document request) {
+		return request.getDocumentElement().getLastChild().getNodeName();
 	}
 
 	private void menu() {
-
+		System.out.println("hello");
 	}
 
 	private void order() {
