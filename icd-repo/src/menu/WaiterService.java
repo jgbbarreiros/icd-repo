@@ -2,7 +2,11 @@ package menu;
 
 import java.net.Socket;
 
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 public class WaiterService extends Service {
 
@@ -14,8 +18,7 @@ public class WaiterService extends Service {
 		String requestType = "";
 		while (connected) {
 			try {
-				doc = (Document) ois.readObject();
-				requestType = getRequestType(doc);
+				requestType = getRequestType((Document) ois.readObject());
 				switch (requestType) {
 				case "orders":
 					orders();
@@ -35,12 +38,20 @@ public class WaiterService extends Service {
 				}
 
 			} catch (Exception e) {
-
+				System.out.println("Exception caught in WaiterService.run.");
+				closeStreams();
 			}
 		}
 	}
 
-	protected String getRequestType(Document doc) {
+	protected String getRequestType(Document resquest) {
+		// mudei este codigo fala comigo depois
+		String root = "";
+		try {
+			Node request = (Node) xPath.compile(root).evaluate(resquest, XPathConstants.NODE);
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		}
 		return null;
 	}
 
@@ -60,4 +71,17 @@ public class WaiterService extends Service {
 
 	}
 
+	// ======================= EXAMPLE OF XPATH USAGE.
+	// ===========================
+	public boolean addItem(String name, String day, String type, float price) {
+		String list = "//" + day + "/" + type;
+		String itemID = "//item[text() = " + name + "]/@itemID";
+		try {
+			Node parent = (Node) xPath.compile(list).evaluate(doc, XPathConstants.NODE);
+			String id = (String) xPath.compile(itemID).evaluate(doc, XPathConstants.STRING);
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
+	}
 }

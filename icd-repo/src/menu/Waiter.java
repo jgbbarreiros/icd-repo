@@ -29,7 +29,7 @@ public class Waiter extends Client {
 		rootElement.appendChild(menu);
 
 		Scanner keyboard = new Scanner(System.in);
-		while (!connected) {
+		while (connected) {
 			System.out.println("Choose a command:\n");
 			System.out.println("\t 1. Check orders");
 			System.out.println("\t 2. Modify status.");
@@ -48,7 +48,7 @@ public class Waiter extends Client {
 				aniversary();
 				break;
 			case 4:
-				connected = true;
+				connected = false;
 				System.out.println("Bye");
 				break;
 			default:

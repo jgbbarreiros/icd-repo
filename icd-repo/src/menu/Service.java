@@ -5,6 +5,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
+
 import org.w3c.dom.Document;
 
 public abstract class Service extends Thread {
@@ -16,6 +19,7 @@ public abstract class Service extends Thread {
 	protected ObjectInputStream ois = null;
 	protected ObjectOutputStream oos = null;
 	protected FileManager fileManager;
+	protected XPath xPath = XPathFactory.newInstance().newXPath();
 
 	public Service(Socket connection, Document restaurant) {
 		fileManager = new FileManager();
@@ -36,6 +40,7 @@ public abstract class Service extends Thread {
 	}
 
 	protected void closeStreams() {
+		System.out.println("Closing Service streams.");
 		try {
 			if (ois != null)
 				ois.close();
@@ -51,6 +56,6 @@ public abstract class Service extends Thread {
 
 	public abstract void run();
 
-	protected abstract String getRequestType(Document doc);
+	protected abstract String getRequestType(Document request);
 
 }
