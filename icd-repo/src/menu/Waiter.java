@@ -1,8 +1,5 @@
 package menu;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.Scanner;
 
 import org.w3c.dom.Document;
@@ -15,7 +12,7 @@ public class Waiter extends Client {
 	private Element items;
 	private Element menu;
 
-	public void request(ObjectInputStream ois, ObjectOutputStream oos) {
+	public void request() {
 
 		FileManager fileManager = new FileManager();
 		Document doc = fileManager.blank();

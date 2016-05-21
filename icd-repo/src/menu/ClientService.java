@@ -11,12 +11,14 @@ public class ClientService extends Service {
 	}
 
 	public void run() {
+		openStreams();
+		String str = "";
 		String requestType = "";
-
 		while (connected) {
 			try {
-				doc = (Document) ois.readObject();
 				requestType = getRequestType(doc);
+				str = (String) ois.readObject();
+				System.out.println(str);
 				switch (requestType) {
 				case "menu":
 					menu();
@@ -39,9 +41,11 @@ public class ClientService extends Service {
 				}
 
 			} catch (Exception e) {
-
+				connected = false;
 			}
 		}
+
+		closeStreams();
 	}
 
 	protected String getRequestType(Document doc) {

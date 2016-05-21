@@ -11,10 +11,10 @@ public abstract class Client {
 
 	public final static String DEFAULT_HOSTNAME = "localhost";
 	public final static int DEFAULT_PORT = 5025;
-	private Document doc = null;
+	protected Document doc = null;
 	private Socket connection = null;
-	private ObjectInputStream ois = null;
-	private ObjectOutputStream oos = null;
+	protected ObjectInputStream ois = null;
+	protected ObjectOutputStream oos = null;
 	protected boolean connected = true;
 
 	public Client() {
@@ -24,8 +24,9 @@ public abstract class Client {
 	public void connect() {
 		try {
 			connection = new Socket(DEFAULT_HOSTNAME, DEFAULT_PORT);
-			ois = new ObjectInputStream(this.connection.getInputStream());
-			oos = new ObjectOutputStream(this.connection.getOutputStream());
+			oos = new ObjectOutputStream(connection.getOutputStream());
+			// ois = new ObjectInputStream(connection.getInputStream());
+			request();
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		} finally {
@@ -41,9 +42,7 @@ public abstract class Client {
 			}
 		}
 
-		request(ois, oos);
-
 	}
 
-	public abstract void request(ObjectInputStream ois, ObjectOutputStream oos);
+	public abstract void request();
 }

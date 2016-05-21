@@ -15,32 +15,36 @@ public abstract class Service extends Thread {
 	protected Document restaurant = null;
 	protected ObjectInputStream ois = null;
 	protected ObjectOutputStream oos = null;
+	protected FileManager fileManager;
 
 	public Service(Socket connection, Document restaurant) {
+		fileManager = new FileManager();
 		this.restaurant = restaurant;
 		this.connection = connection;
-		this.connected = true;
-		openStreams();
 	}
 
-	private void openStreams() {
+	protected void openStreams() {
 		try {
 			ois = new ObjectInputStream(this.connection.getInputStream());
 			oos = new ObjectOutputStream(this.connection.getOutputStream());
+			oos.flush();
+			connected = true;
+			System.out.println("Connection made with client...");
 		} catch (Exception e) {
-			System.err.println(e.getMessage());
-		} finally {
-			try {
-				if (ois != null)
-					ois.close();
-				if (oos != null)
-					oos.close();
+			closeStreams();
+		}
+	}
 
-				if (connection != null)
-					connection.close();
-			} catch (IOException e) {
-				System.err.println(e.getMessage());
-			}
+	protected void closeStreams() {
+		try {
+			if (ois != null)
+				ois.close();
+			if (oos != null)
+				oos.close();
+			if (connection != null)
+				connection.close();
+		} catch (IOException e) {
+			System.err.println(e.getMessage());
 		}
 	}
 

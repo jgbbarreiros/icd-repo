@@ -17,16 +17,15 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-
 public class FileManager {
-	
+
 	private DocumentBuilder documentBuilder = null;
 	private Document document = null;
 	private Transformer transformer = null;
 	private String currentDocName = null;
-	
+
 	public FileManager() {
-		
+		currentDocName = "document";
 		try {
 			documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			transformer = TransformerFactory.newInstance().newTransformer();
@@ -39,12 +38,16 @@ public class FileManager {
 			System.err.println(e.getMessage());
 		}
 	}
-	
+
 	public Document blank() {
 		document = documentBuilder.newDocument();
 		return this.document;
 	}
-	
+
+	public void load(Document doc) {
+		this.document = doc;
+	}
+
 	public boolean load(String docName) {
 		try {
 			File file = new File(docName + ".xml");
@@ -57,17 +60,18 @@ public class FileManager {
 		}
 		return false;
 	}
-	
+
 	public boolean save() {
 		if (currentDocName.isEmpty())
 			return false;
 		saveAs(currentDocName);
 		return true;
 	}
-	
+
 	public boolean saveAs(String docName) {
 		try {
-			// TODO document has root element ? go on : create and append root element  
+			// TODO document has root element ? go on : create and append root
+			// element
 			DOMSource source = new DOMSource(document);
 			StreamResult result = new StreamResult(new File(docName + ".xml"));
 			transformer.transform(source, result);
@@ -77,5 +81,5 @@ public class FileManager {
 		}
 		return false;
 	}
-	
+
 }

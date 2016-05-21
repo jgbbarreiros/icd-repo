@@ -33,10 +33,10 @@ public class Server {
 	public static void main(String[] args) {
 		Server server = new Server("x");
 
-		Server server1 = new Server("monapettit");
-		Server server2 = new Server("praisetheburger");
-		Server server3 = new Server("ricksavenue");
-		Server server4 = new Server("dianasdiner");
+		// Server server1 = new Server("monapettit");
+		// Server server2 = new Server("praisetheburger");
+		// Server server3 = new Server("ricksavenue");
+		// Server server4 = new Server("dianasdiner");
 
 		try {
 			server.launch();
