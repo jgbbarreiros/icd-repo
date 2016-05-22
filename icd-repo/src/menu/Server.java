@@ -27,6 +27,12 @@ public class Server {
 			service = serverSocket.accept();
 			Thread th = new ClientService(service, doc);
 			th.start();
+
+			// WAITS FOR A WAITER TO CONNECT
+			service = serverSocket.accept();
+			Thread th2 = new WaiterService(service, doc);
+			th2.start();
+			break;
 		}
 	}
 

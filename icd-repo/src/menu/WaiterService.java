@@ -46,7 +46,8 @@ public class WaiterService extends Service {
 	}
 
 	protected String getRequestType() {
-		String root = "";
+
+		String root = "//" + "" + "/name()";
 		try {
 			Node request = (Node) xPath.compile(root).evaluate(doc, XPathConstants.NODE);
 		} catch (XPathExpressionException e) {
