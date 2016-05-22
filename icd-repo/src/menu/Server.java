@@ -37,7 +37,7 @@ public class Server {
 	}
 
 	public static void main(String[] args) {
-		Server server = new Server("x");
+		Server server = new Server("monapettit");
 
 		// Server server1 = new Server("monapettit");
 		// Server server2 = new Server("praisetheburger");

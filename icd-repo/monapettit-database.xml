@@ -1,0 +1,16 @@
+<clients>
+	<client id="c1">
+		<order status="delivered">
+			<item itref="it1"/>
+			<item itref="it3"/>
+			<item itref="it8"/>
+		</order>
+		<debt></debt></client>
+	<client>
+		<order status="ready">
+			<item itref="it2"/>
+			<item itref="it4"/>
+			<item itref="it7"/>
+		</order>
+		<debt></debt></client>
+</clients>
