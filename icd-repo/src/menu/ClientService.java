@@ -6,8 +6,8 @@ import org.w3c.dom.Document;
 
 public class ClientService extends Service {
 
-	public ClientService(Socket connection, Document restaurant) {
-		super(connection, restaurant);
+	public ClientService(Socket connection, Document menu, Document database) {
+		super(connection, menu, database);
 	}
 
 	public void run() {

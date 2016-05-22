@@ -1,6 +1,6 @@
 <restaurant>
 	<items>
-		<item itID="it1" type="apetiser">
+		<item id="it1" type="apetiser">
 			<name>
 				<en>Garlic Bread</en>
 				<pt>Pao de Alho</pt>
@@ -19,7 +19,7 @@
 				</ingredient>
 			</composition>
 		</item>
-		<item itID="it2" type="apetiser">
+		<item id="it2" type="apetiser">
 			<name>
 				<en>Stuffed Peppers</en>
 				<pt>Pimentos recheados</pt>
@@ -48,7 +48,7 @@
 				</ingredient>
 			</composition>
 		</item>
-		<item itID="it3" type="main">
+		<item id="it3" type="main">
 			<name>
 				<en>Duck Rice</en>
 				<pt>Arroz de Pato</pt>
@@ -67,7 +67,7 @@
 				</ingredient>
 			</composition>
 		</item>
-		<item itID="it4" type="main">
+		<item id="it4" type="main">
 			<name>
 				<en>Cod of Cream</en>
 				<pt>Bacalhau com Natas</pt>
@@ -86,7 +86,7 @@
 				</ingredient>
 			</composition>
 		</item>
-		<item itID="it5" type="main">
+		<item id="it5" type="main">
 			<name>
 				<en>Lasagna Bolognese</en>
 				<pt>Lasanha de Bolonhesa</pt>
@@ -105,7 +105,7 @@
 				</ingredient>
 			</composition>
 		</item>
-		<item itID="it6" type="main">
+		<item id="it6" type="main">
 			<name>
 				<en>Strogonoff</en>
 				<pt>Strogonoff</pt>
@@ -129,7 +129,7 @@
 				</ingredient>
 			</composition>
 		</item>
-		<item itID="it7" type="dessert">
+		<item id="it7" type="dessert">
 			<name>
 				<en>Fruit Salad</en>
 				<pt>Salada de Fruta</pt>
@@ -158,7 +158,7 @@
 				</ingredient>
 			</composition>
 		</item>
-		<item itID="it8" type="dessert">
+		<item id="it8" type="dessert">
 			<name>
 				<en>Chocolate Puding</en>
 				<pt>Pudim de Chocolate</pt>

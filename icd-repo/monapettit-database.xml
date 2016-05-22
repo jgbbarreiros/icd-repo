@@ -6,7 +6,7 @@
 			<item itref="it8"/>
 		</order>
 		<debt></debt></client>
-	<client>
+	<client id="2">
 		<order status="ready">
 			<item itref="it2"/>
 			<item itref="it4"/>

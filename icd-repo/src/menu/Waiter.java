@@ -3,21 +3,13 @@ package menu;
 import java.io.IOException;
 import java.util.Scanner;
 
-import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 public class Waiter extends Client {
 
-	private FileManager fp;
-	private Element root;
-
 	public void request() {
-
-		fp = new FileManager();
-		Document doc = fp.blank();
-		root = doc.createElement("clients");
-		doc.appendChild(root);
+		System.out.println("waiter requested");
 
 		Scanner keyboard = new Scanner(System.in);
 		while (connected) {
@@ -49,14 +41,9 @@ public class Waiter extends Client {
 		keyboard.close();
 	}
 
-	public static void main(String[] args) {
-		new Waiter().connect();
-	}
-
 	private void orders() {
-		doc = fp.blank();
-		root = doc.createElement("clients");
-		doc.appendChild(root);
+		Element clients = doc.createElement("clients");
+		requests.appendChild(clients);
 		try {
 			oos.writeObject(doc);
 			// Reads the whole clients list and orders.
@@ -70,7 +57,8 @@ public class Waiter extends Client {
 		Scanner keyboard = new Scanner(System.in);
 		boolean invalid = true;
 		System.out.print("Insert order id: > ");
-		String id = "o" + keyboard.nextInt();
+		int orderId = keyboard.nextInt();
+		String id = "o" + orderId;
 		String status = "";
 		while (invalid) {
 			System.out.println("Choose new status for order id \"" + id + "\":\n");
@@ -100,24 +88,19 @@ public class Waiter extends Client {
 				System.out.println("Please choose a valid status.");
 			}
 		}
-		System.out.print(" -> status");
 		keyboard.close();
 
-		doc = fp.blank();
-		root = doc.createElement("order");
-		doc.appendChild(root);
-		Attr attrId = doc.createAttribute("id");
-		attrId.setValue(id);
-		root.setAttributeNode(attrId);
-		Attr attrStatus = doc.createAttribute("status");
-		attrStatus.setValue(status);
-		root.setAttributeNode(attrStatus);
+		Element order = doc.createElement("order");
+		order.setAttribute("id", id);
+		order.setAttribute("status", status);
+		requests.appendChild(order);
+		System.out.println("Document >> \n" + doc);
 		try {
 			oos.writeObject(doc);
 			// Reads the order to know if it was updated.
-			doc = (Document) ois.readObject();
+			// doc = (Document) ois.readObject();
 		} catch (Exception e) {
-			System.out.println("Exception caught in Waiter.orders.");
+			System.out.println("Exception caught in Waiter.update.");
 		}
 	}
 
@@ -126,8 +109,12 @@ public class Waiter extends Client {
 			oos.writeObject(doc);
 
 		} catch (IOException e) {
-			System.out.println("Exception caught in Waiter.orders.");
+			System.out.println("Exception caught in Waiter.aniversary.");
 		}
 	}
 
+	public static void main(String[] args) {
+		Waiter waiter = new Waiter();
+		waiter.connect();
+	}
 }

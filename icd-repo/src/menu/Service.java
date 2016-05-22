@@ -15,15 +15,16 @@ public abstract class Service extends Thread {
 	protected Socket connection;
 	protected boolean connected = false;
 	protected Document doc = null;
-	protected Document restaurant = null;
+	protected Document menu = null;
+	protected Document database = null;
 	protected ObjectInputStream ois = null;
 	protected ObjectOutputStream oos = null;
 	protected FileManager fileManager;
 	protected XPath xPath = XPathFactory.newInstance().newXPath();
 
-	public Service(Socket connection, Document restaurant) {
+	public Service(Socket connection, Document menu, Document database) {
 		fileManager = new FileManager();
-		this.restaurant = restaurant;
+		this.menu = menu;
 		this.connection = connection;
 	}
 

@@ -48,18 +48,18 @@ public class FileManager {
 		this.document = doc;
 	}
 
-	public boolean load(String docName) {
-		try {
-			File file = new File(docName + ".xml");
-			document = documentBuilder.parse(file);
-			return true;
-		} catch (SAXException e) {
-			System.err.println(e.getMessage());
-		} catch (IOException e) {
-			System.err.println(e.getMessage());
-		}
-		return false;
-	}
+	public Document load(String docName) {
+        try {
+            File file = new File(docName);
+            documentBuilder.parse(file);
+            return documentBuilder.parse(file);
+        } catch (SAXException e) {
+            System.err.println(e.getMessage());
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
+        return null;
+    }
 
 	public boolean save() {
 		if (currentDocName.isEmpty())
