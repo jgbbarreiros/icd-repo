@@ -9,6 +9,8 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSSerializer;
 
 public abstract class Service extends Thread {
 
@@ -25,6 +27,7 @@ public abstract class Service extends Thread {
 	public Service(Socket connection, Document menu, Document database) {
 		fileManager = new FileManager();
 		this.menu = menu;
+		this.database = database;
 		this.connection = connection;
 	}
 
@@ -56,6 +59,13 @@ public abstract class Service extends Thread {
 	}
 
 	public abstract void run();
+	
+
+	public String docToString(Document doc) {
+		DOMImplementationLS domImplementation = (DOMImplementationLS) doc.getImplementation();
+		LSSerializer lsSerializer = domImplementation.createLSSerializer();
+		return lsSerializer.writeToString(doc);
+	}
 
 	protected abstract String getRequestType(Document request);
 
