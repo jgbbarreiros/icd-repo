@@ -10,6 +10,8 @@ import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSSerializer;
 
 public abstract class Client {
 
@@ -55,4 +57,11 @@ public abstract class Client {
 	}
 
 	public abstract void request();
+	
+
+	public String docToString(Document doc) {
+		DOMImplementationLS domImplementation = (DOMImplementationLS) doc.getImplementation();
+		LSSerializer lsSerializer = domImplementation.createLSSerializer();
+		return lsSerializer.writeToString(doc);
+	}
 }

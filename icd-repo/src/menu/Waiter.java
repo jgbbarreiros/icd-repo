@@ -3,10 +3,17 @@ package menu;
 import java.io.IOException;
 import java.util.Scanner;
 
+import javax.xml.xpath.XPathConstants;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 public class Waiter extends Client {
+
+	public Waiter() {
+		super();
+	}
 
 	public void request() {
 		System.out.println("waiter requested");
@@ -48,20 +55,27 @@ public class Waiter extends Client {
 			oos.writeObject(doc);
 			// Reads the whole clients list and orders.
 			doc = (Document) ois.readObject();
+			System.out.println(docToString(doc));
+			System.out.println(
+					(String) xPath.compile("string(//client[@id='c1']//@status)").evaluate(doc, XPathConstants.STRING));
 		} catch (Exception e) {
 			System.out.println("Exception caught in Waiter.orders.");
+			e.printStackTrace();
 		}
 	}
 
 	public void update() {
+		System.out.println(docToString(doc));
+
 		Scanner keyboard = new Scanner(System.in);
 		boolean invalid = true;
-		System.out.print("Insert order id: > ");
-		int orderId = keyboard.nextInt();
-		String id = "o" + orderId;
+		System.out.print("Insert client ID: > ");
+		String cid = Integer.toString(keyboard.nextInt());
+		System.out.print("Insert order ID: > ");
+		String oid = Integer.toString(keyboard.nextInt());
 		String status = "";
 		while (invalid) {
-			System.out.println("Choose new status for order id \"" + id + "\":\n");
+			System.out.println("Choose new status for client \"" + cid + "\" with order id \"" + oid + "\":\n");
 			System.out.println("\t 1. Accepted");
 			System.out.println("\t 2. Ready.");
 			System.out.println("\t 3. Delivered.");
@@ -90,16 +104,26 @@ public class Waiter extends Client {
 		}
 		keyboard.close();
 
-		Element order = doc.createElement("order");
-		order.setAttribute("id", id);
-		order.setAttribute("status", status);
-		requests.appendChild(order);
-		System.out.println("Document >> \n" + doc);
+		FileManager fm = new FileManager();
+		Document request = fm.blank();
+		Element e = request.createElement("update");
+		Element c = request.createElement("client");
+		c.setAttribute("id", cid);
+		Element o = request.createElement("order");
+		o.setAttribute("id", oid);
+		o.setAttribute("status", status);
+		c.appendChild(o);
+		e.appendChild(c);
+		request.appendChild(e);
+		//request.appendChild(e);
+		//request.adoptNode(c);
+
+		System.out.println(docToString(request));
 		try {
-			oos.writeObject(doc);
+			oos.writeObject(request);
 			// Reads the order to know if it was updated.
 			// doc = (Document) ois.readObject();
-		} catch (Exception e) {
+		} catch (Exception e1) {
 			System.out.println("Exception caught in Waiter.update.");
 		}
 	}

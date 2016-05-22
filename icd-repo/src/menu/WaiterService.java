@@ -18,13 +18,14 @@ public class WaiterService extends Service {
 		String requestType = "";
 		while (connected) {
 			try {
-				requestType = getRequestType((Document) ois.readObject());
+				Document d = (Document) ois.readObject();
+				requestType = getRequestType(d);
 				switch (requestType) {
 				case "clients":
 					orders();
 					break;
 				case "update":
-					update();
+					update(d);
 					break;
 				case "aniversary":
 					aniversary();
@@ -44,16 +45,37 @@ public class WaiterService extends Service {
 
 	protected String getRequestType(Document request) {
 		System.out.println("GETTING REQUEST TYPE.");
+		System.out.println(docToString(request));
 		return request.getDocumentElement().getFirstChild().getNodeName();
 	}
 
 	private void orders() {
 		System.out.println("RETURNING ORDERS");
-		
+		try {
+			// System.out.println((String)
+			// xPath.compile("string(//client[@id='c1']//@status)").evaluate(database,
+			// XPathConstants.STRING));
+			oos.writeObject(database);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
-	public void update() {
+	public void update(Document d) {
 		System.out.println("RETURNING UPDATE");
+		docToString(d);
+
+		try {
+			String client = (String) xPath.compile("//client/@id/text())").evaluate(database, XPathConstants.STRING);
+			String order = (String) xPath.compile("//order/@id/text())").evaluate(database, XPathConstants.STRING);
+			Node n = (Node) xPath.compile("//client[@id = " + client + "]/order[@id = " + order + "]")
+					.evaluate(database, XPathConstants.NODE);
+			System.out.println("Node > " + n.toString());
+			oos.writeObject(database);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Couldnt get element.");
+		}
 	}
 
 	public void aniversary() {

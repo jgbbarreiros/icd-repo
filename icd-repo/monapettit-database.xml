@@ -1,13 +1,18 @@
 <clients>
-	<client id="c1">
-		<order status="delivered">
+	<client id="1">
+		<order id="1" status="delivered">
 			<item itref="it1"/>
 			<item itref="it3"/>
 			<item itref="it8"/>
 		</order>
+		<order id="2" status="accepted">
+			<item itref="it1"/>
+			<item itref="it3"/>
+			<item itref="it8"/>x
+		</order>
 		<debt></debt></client>
 	<client id="2">
-		<order status="ready">
+		<order id ="1" status="ready">
 			<item itref="it2"/>
 			<item itref="it4"/>
 			<item itref="it7"/>
