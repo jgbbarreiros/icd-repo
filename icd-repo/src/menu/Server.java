@@ -52,17 +52,17 @@ public class Server {
 
 		while (true) {
 
-			// System.out.println("Server listening on localhost:" +
-			// DEFAULT_PORT + "...");
-			// service = serverSocket.accept();
-			// Thread th = new ClientService(service, doc);
-			// th.start();
+			 System.out.println("Server listening on localhost:" +
+			 DEFAULT_PORT + "...");
+			 service = serverSocket.accept();
+			 Thread th = new ClientService(service, menu, database);
+			 th.start();
 
 			// WAITS FOR A WAITER TO CONNECT
-			System.out.println("Server listening on localhost:" + DEFAULT_PORT + "...");
-			service = serverSocket.accept();
-			Thread th2 = new WaiterService(service, menu, database);
-			th2.start();
+//			System.out.println("Server listening on localhost:" + DEFAULT_PORT + "...");
+//			service = serverSocket.accept();
+//			Thread th2 = new WaiterService(service, menu, database);
+//			th2.start();
 			break;
 		}
 	}

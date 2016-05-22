@@ -30,8 +30,8 @@ public class User extends Client {
 		date = new Date();
 		calendar = Calendar.getInstance();
 		calendar.setTime(date);
-		language = "eng";
-		weekday = calendar.get(Calendar.DAY_OF_WEEK) > 5 ? "yes" : "no";
+		language = "en";
+		weekday = calendar.get(Calendar.DAY_OF_WEEK) > 5 ? "weekday" : "restday";
 		type = calendar.get(Calendar.HOUR_OF_DAY) < 19 ? "lunch" : "dinner";
 	}
 
@@ -108,7 +108,7 @@ public class User extends Client {
 		System.out.print("hour = ");
 		int hour = keyboard.nextInt();
 		calendar.set(year, month, day, hour, 0);
-		weekday = calendar.get(Calendar.DAY_OF_WEEK) > 5 ? "yes" : "no";
+		weekday = calendar.get(Calendar.DAY_OF_WEEK) > 5 ? "weekday" : "restday";
 		type = hour < 19 ? "lunch" : "dinner";
 	}
 
@@ -124,6 +124,9 @@ public class User extends Client {
 
 	private void showMenu() {
 		// TODO after menu response
+		FileManager fileManager = new FileManager();
+		fileManager.load(menu);
+		fileManager.saveAs("menu");
 	}
 
 	private void order() throws DOMException, XPathExpressionException, IOException, ClassNotFoundException {

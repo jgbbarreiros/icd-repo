@@ -9,6 +9,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 public abstract class Service extends Thread {
 
@@ -17,15 +18,20 @@ public abstract class Service extends Thread {
 	protected Document doc = null;
 	protected Document menu = null;
 	protected Document database = null;
+	protected Document request = null;
 	protected ObjectInputStream ois = null;
 	protected ObjectOutputStream oos = null;
 	protected FileManager fileManager;
 	protected XPath xPath = XPathFactory.newInstance().newXPath();
+	protected Element responses;
 
 	public Service(Socket connection, Document menu, Document database) {
 		fileManager = new FileManager();
 		this.menu = menu;
 		this.connection = connection;
+		doc = fileManager.blank();
+		responses = doc.createElement("responses");
+		doc.appendChild(responses);
 	}
 
 	protected void openStreams() {
