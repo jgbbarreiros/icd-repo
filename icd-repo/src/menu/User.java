@@ -5,83 +5,69 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Scanner;
 
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 public class User extends Client {
-	private Element rootElement;
-	private Element ingredients;
-	private Element items;
-	private Element menu;
 
+	private Document menu;
 	private Calendar calendar;
 	private Date date;
-	private int year;
-	private int month;
-	private int day;
-	private int hour;
-	private boolean weekday;
+	private String weekday;
 	private String language;
 	private Scanner keyboard;
-	private boolean lunch;
+	private String type;
 
 	public User() {
+		super();
 		keyboard = new Scanner(System.in);
 		// get var type >> var.getClass().getName();
 		date = new Date();
 		calendar = Calendar.getInstance();
 		calendar.setTime(date);
 		language = "eng";
-		weekday = calendar.get(Calendar.DAY_OF_WEEK) > 5 ? false : true;
+		weekday = calendar.get(Calendar.DAY_OF_WEEK) > 5 ? "yes" : "no";
+		type = calendar.get(Calendar.HOUR_OF_DAY) < 19 ? "lunch" : "dinner";
 	}
 
 	@Override
 	public void request() {
-		FileManager fileManager = new FileManager();
-		doc = fileManager.blank();
-		rootElement = doc.createElement("restaurant");
-		doc.appendChild(rootElement);
-
-		ingredients = doc.createElement("ingredients");
-		rootElement.appendChild(ingredients);
-
-		items = doc.createElement("items");
-		rootElement.appendChild(items);
-
-		menu = doc.createElement("menu");
-		rootElement.appendChild(menu);
 
 		while (connected) {
-			System.out.println("\n============================");
-			System.out.println(calendar.getTime());
-			System.out.println("\nChoose a command:");
-			System.out.println("\t1. Request Menu");
-			System.out.println("\t2. Order.");
-			System.out.println("\t3. Check order");
-			System.out.println("\t4. Pay order.");
-			System.out.println("\t5. Leave");
-			System.out.print(">> ");
-			switch (keyboard.nextInt()) {
-			case 1:
-				setDate();
-				menu();
-				break;
-			case 2:
-				order();
-				break;
-			case 3:
-				check();
-				break;
-			case 4:
-				pay();
-				break;
-			case 5:
-				leave();
+			try {
+				System.out.println("\n============================");
+				System.out.println(calendar.getTime());
+				menuOptions(new String[] { "Request Menu", "Order", "Check order", "Pay order", "Leave" });
+				switch (keyboard.nextInt()) {
+				case 1:
+					menu();
+					break;
+				case 2:
+					order();
+					break;
+				case 3:
+					check();
+					break;
+				case 4:
+					pay();
+					break;
+				case 5:
+					leave();
+					connected = false;
+					System.out.println("Bye");
+					break;
+				default:
+					System.out.println("Please choose a valid option.");
+					break;
+				}
+			} catch (Exception e) {
+				System.err.println(e.getMessage());
 				connected = false;
-				System.out.println("Bye");
-				break;
-			default:
-				System.out.println("Please choose a valid option.");
-				break;
 			}
 		}
 		keyboard.close();
@@ -89,58 +75,126 @@ public class User extends Client {
 
 	public static void main(String[] args) {
 		User user = new User();
+		// user.request();
 		user.connect();
 	}
 
-	private void menu(/* String language, String type, boolean weekday */) {
+	private void menu() throws ClassNotFoundException, IOException {
 
+		menuOptions(new String[] { "Current date", "Other date", "Back" });
+		switch (keyboard.nextInt()) {
+		case 1:
+			break;
+		case 2:
+			setDate();
+			break;
+		case 3:
+			return;
+		default:
+			System.out.println("Please choose a valid option.");
+			break;
+		}
+		menu = requestMenu();
+		showMenu();
 	}
 
 	private void setDate() {
-		System.out.println("\nChoose a command:");
-		System.out.println("\t1. Request Menu");
-		System.out.println("\t2. Order.");
-		System.out.println("\t5. back");
-		System.out.print(">> ");
-
 		System.out.print("year = ");
-		year = keyboard.nextInt();
+		int year = keyboard.nextInt();
 		System.out.print("month = ");
-		month = keyboard.nextInt() - 1;
+		int month = keyboard.nextInt() - 1;
 		System.out.print("day = ");
-		day = keyboard.nextInt();
+		int day = keyboard.nextInt();
 		System.out.print("hour = ");
-		hour = keyboard.nextInt();
-
+		int hour = keyboard.nextInt();
 		calendar.set(year, month, day, hour, 0);
-		System.out.println(calendar.getTime());
-
-		weekday = calendar.get(Calendar.DAY_OF_WEEK) > 5 ? false : true;
-		lunch = hour < 19 ? true : false;
-
-		System.out.println("weeday: " + weekday);
-		System.out.println("lunch: " + lunch);
-
+		weekday = calendar.get(Calendar.DAY_OF_WEEK) > 5 ? "yes" : "no";
+		type = hour < 19 ? "lunch" : "dinner";
 	}
 
-	private void order() {
-		try {
-			oos.writeObject("ola");
-		} catch (IOException e) {
-			e.printStackTrace();
+	private Document requestMenu() throws IOException, ClassNotFoundException {
+		Element menu = doc.createElement("menu");
+		menu.setAttribute("language", language);
+		menu.setAttribute("type", type);
+		menu.setAttribute("weekday", weekday);
+		requests.appendChild(menu);
+		oos.writeObject(doc);
+		return (Document) ois.readObject();
+	}
+
+	private void showMenu() {
+		// TODO after menu response
+	}
+
+	private void order() throws DOMException, XPathExpressionException, IOException, ClassNotFoundException {
+		System.out.println("\nInsert item id's separated by commas:");
+		System.out.print(">> ");
+		keyboard.nextLine();
+		String[] orderList = keyboard.nextLine().trim().split(",");
+		Element order = doc.createElement("order");
+		requests.appendChild(order);
+		String expression;
+		for (int i = 0; i < orderList.length; i++) {
+			expression = "//item[@itemRef='" + orderList[i] + "']/@name";
+			order.appendChild((Node) xPath.compile(expression).evaluate(menu, XPathConstants.NODE));
 		}
+		oos.writeObject(doc);
+		showOrder((Document) ois.readObject());
+	}
+	
+	private void showOrder(Document order) {
+		// TODO after order response
 	}
 
-	private void check() {
-
+	private void check() throws IOException, ClassNotFoundException {
+		Element check = doc.createElement("check");
+		requests.appendChild(check);
+		
+		Element status = doc.createElement("status");
+		check.appendChild(status);
+		
+		Element debt = doc.createElement("debt");
+		check.appendChild(debt);
+		
+		oos.writeObject(doc);
+		showCheck((Document) ois.readObject());
+	}
+	
+	private void showCheck(Document check) {
+		// TODO after check response
 	}
 
-	private void pay() {
-
+	private void pay() throws IOException, ClassNotFoundException {
+		Element pay = doc.createElement("pay");
+		requests.appendChild(pay);
+		
+		oos.writeObject(doc);
+		showPay((Document) ois.readObject());
+	}
+	
+	private void showPay(Document check) {
+		// TODO after pay response
 	}
 
-	private void leave() {
-
+	private void leave() throws IOException, ClassNotFoundException {
+		Element leave = doc.createElement("leave");
+		requests.appendChild(leave);
+		
+		oos.writeObject(doc);
+		showLeave((Document) ois.readObject());
+	}
+	
+	private void showLeave(Document check) {
+		// TODO after leave response
+	}
+	
+	private void menuOptions(String[] options) {
+		System.out.println("\nChoose a command:");
+		int number = 1;
+		for (String option : options) {
+			System.out.println("\t" + number++ + ". " + option);
+		}
+		System.out.print(">> ");
 	}
 
 }

@@ -9,26 +9,33 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 public abstract class Client {
-	protected XPath xPath = XPathFactory.newInstance().newXPath();
+
 	public final static String DEFAULT_HOSTNAME = "localhost";
 	public final static int DEFAULT_PORT = 5025;
+	protected XPath xPath;
 	protected Document doc = null;
 	private Socket connection = null;
 	protected ObjectInputStream ois = null;
 	protected ObjectOutputStream oos = null;
 	protected boolean connected = true;
+	protected Element requests;
 
 	public Client() {
-
+		xPath = XPathFactory.newInstance().newXPath();
+		FileManager fileManager = new FileManager();
+		doc = fileManager.blank();
+		requests = doc.createElement("requests");
+		doc.appendChild(requests);
 	}
 
 	public void connect() {
 		try {
 			connection = new Socket(DEFAULT_HOSTNAME, DEFAULT_PORT);
 			oos = new ObjectOutputStream(connection.getOutputStream());
-			// ois = new ObjectInputStream(connection.getInputStream());
+			ois = new ObjectInputStream(connection.getInputStream());
 			request();
 		} catch (Exception e) {
 			System.err.println(e.getMessage());

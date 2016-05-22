@@ -18,8 +18,7 @@ public class WaiterService extends Service {
 		String requestType = "";
 		while (connected) {
 			try {
-				doc = (Document) ois.readObject();
-				requestType = getRequestType();
+				requestType = getRequestType((Document) ois.readObject());
 				switch (requestType) {
 				case "orders":
 					orders();
@@ -45,11 +44,11 @@ public class WaiterService extends Service {
 		}
 	}
 
-	protected String getRequestType() {
+	protected String getRequestType(Document request) {
 
 		String root = "//" + "" + "/name()";
 		try {
-			Node request = (Node) xPath.compile(root).evaluate(doc, XPathConstants.NODE);
+			Node n = (Node) xPath.compile(root).evaluate(doc, XPathConstants.NODE);
 		} catch (XPathExpressionException e) {
 			e.printStackTrace();
 		}

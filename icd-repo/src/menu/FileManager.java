@@ -19,10 +19,10 @@ import org.xml.sax.SAXException;
 
 public class FileManager {
 
-	private DocumentBuilder documentBuilder = null;
-	private Document document = null;
-	private Transformer transformer = null;
-	private String currentDocName = null;
+	private DocumentBuilder documentBuilder;
+	private Document document;
+	private Transformer transformer;
+	private String currentDocName;
 
 	public FileManager() {
 		currentDocName = "document";
