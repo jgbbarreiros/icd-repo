@@ -1,22 +1,12 @@
 <clients>
 	<client id="1">
-		<order id="1" status="delivered">
-			<item itref="it1"/>
-			<item itref="it3"/>
-			<item itref="it8"/>
+		<debt>0.0</debt>
+		<order status="accepted">
+			<item itref="1" name="Garlic Bread">1.25</item>
+			<item itref="3" name="Duck Rice">1.25</item>
 		</order>
-		<order id="2" status="accepted">
-			<item itref="it1"/>
-			<item itref="it3"/>
-			<item itref="it8"/>
-		</order>
-		<debt></debt>
 		</client>
 	<client id="2">
-		<order id="1" status="ready">
-			<item itref="it2"/>
-			<item itref="it4"/>
-			<item itref="it7"/>
-		</order>
-		<debt></debt></client>
+		<debt>0.0</debt>
+	</client>
 </clients>

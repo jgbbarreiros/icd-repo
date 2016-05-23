@@ -14,8 +14,23 @@ public class ClientService extends Service {
 
 	private Element requestElement;
 
+	private Element clientElement;
+	private Element debtElement;
+	private double debt;
+
 	public ClientService(Socket connection, Document menu, Document database) {
 		super(connection, menu, database);
+		String expression;
+		try {
+			expression = "//client[@id='1']"; // TODO client id
+			clientElement = (Element) xPath.compile(expression).evaluate(database, XPathConstants.NODE);
+
+			expression = "//client[@id='1']/debt"; // TODO client id
+			debtElement = (Element) xPath.compile(expression).evaluate(database, XPathConstants.NODE);
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		}
+		debt = Double.parseDouble(debtElement.getTextContent());
 	}
 
 	public void run() {
@@ -25,8 +40,9 @@ public class ClientService extends Service {
 			try {
 				request = (Document) ois.readObject();
 				requestElement = (Element) request.getDocumentElement().getLastChild();
-				System.out.println(docToString(request));
 				requestType = getRequestType(request);
+				System.out.println("\n" + requestType + " request");
+				System.out.println(docToString(request));
 				switch (requestType) {
 				case "menu":
 					menu();
@@ -62,19 +78,17 @@ public class ClientService extends Service {
 	}
 
 	private void menu() throws XPathExpressionException, IOException {
-		System.out.println("menu");
 
 		Element menuElem = doc.createElement("menu");
 		responses.appendChild(menuElem);
 		String expression;
-		
+
 		// get menu for certain day and type
 		expression = "//" + requestElement.getAttribute("weekday") + "/" + requestElement.getAttribute("type")
 				+ "/item";
 		NodeList menuItems = (NodeList) xPath.compile(expression).evaluate(menu, XPathConstants.NODESET);
 
 		for (int i = 0; i < menuItems.getLength(); i++) {
-			// Node n = menuItems.item(i);
 			Element menuItem = (Element) menuItems.item(i);
 
 			// get names in certain language
@@ -91,39 +105,48 @@ public class ClientService extends Service {
 	}
 
 	private void order() throws IOException, XPathExpressionException {
-		System.out.println("order");
 
 		// database update
 		Element orderItems = (Element) requestElement.cloneNode(true);
 		database.adoptNode(orderItems);
 		orderItems.setAttribute("status", "accepted");
-		String expression = "//client[@id='1']";
-		Element clientElem = (Element) xPath.compile(expression).evaluate(database, XPathConstants.NODE);
-		clientElem.appendChild(orderItems);
-		
-		expression = "sum(*/*[last()]/item/text())";
+		clientElement.appendChild(orderItems);
+
+		String expression = "sum(*/*[last()]/item/text())";
 		String orderDebt = (String) xPath.compile(expression).evaluate(request, XPathConstants.STRING);
-		double debt = 0 + Double.parseDouble(orderDebt);
-		
-		expression = "//client[@id='1']/debt";
-		Element debtElem = (Element) xPath.compile(expression).evaluate(database, XPathConstants.NODE);
-		debtElem.setTextContent(debt+"");
-		
+		debt += Double.parseDouble(orderDebt);
+
+		debtElement.setTextContent(debt + "");
+
 		FileManager fm = new FileManager();
 		fm.load(database);
-		fm.save();
-		
-		// Client response
+		fm.save(); // TODO update real database file
+
+		// client response
 		Element orderElem = doc.createElement("print");
 		orderElem.appendChild(doc.createTextNode("Ordered successfully"));
 		responses.appendChild(orderElem);
-		
+
 		oos.reset();
 		oos.writeObject(doc);
 	}
 
-	private void check() {
-
+	private void check() throws IOException, XPathExpressionException {
+		
+		Element checkElement = doc.createElement("check");
+		String expression = "//client[@id='1']/*";
+		NodeList clientStatus = (NodeList) xPath.compile(expression).evaluate(database, XPathConstants.NODESET);
+		//NodeList clientStatus = clientElement.getChildNodes();
+		for (int i = 0; i < clientStatus.getLength(); i++) {
+			Element item = (Element) clientStatus.item(i);
+			Element itemNew = (Element) item.cloneNode(true);
+			doc.adoptNode(itemNew);
+			checkElement.appendChild(itemNew);
+		}
+		responses.appendChild(checkElement);
+		
+		oos.reset();
+		oos.writeObject(doc);
 	}
 
 	private void pay() {

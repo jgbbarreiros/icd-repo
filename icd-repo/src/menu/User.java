@@ -150,7 +150,7 @@ public class User extends Client {
 		oos.writeObject(doc);
 		showOrder((Document) ois.readObject());
 	}
-	
+
 	private void showOrder(Document order) {
 		// TODO after order response
 	}
@@ -158,29 +158,37 @@ public class User extends Client {
 	private void check() throws IOException, ClassNotFoundException {
 		Element check = doc.createElement("check");
 		requests.appendChild(check);
-		
+
 		Element status = doc.createElement("status");
 		check.appendChild(status);
-		
+
 		Element debt = doc.createElement("debt");
 		check.appendChild(debt);
 		
+		DOMImplementationLS domImplementation = (DOMImplementationLS) doc.getImplementation();
+		LSSerializer lsSerializer = domImplementation.createLSSerializer();
+		System.out.println(lsSerializer.writeToString(doc));
+		
+		oos.reset();
 		oos.writeObject(doc);
 		showCheck((Document) ois.readObject());
 	}
-	
+
 	private void showCheck(Document check) {
 		// TODO after check response
+		DOMImplementationLS domImplementation = (DOMImplementationLS) check.getImplementation();
+		LSSerializer lsSerializer = domImplementation.createLSSerializer();
+		System.out.println(lsSerializer.writeToString(check));
 	}
 
 	private void pay() throws IOException, ClassNotFoundException {
 		Element pay = doc.createElement("pay");
 		requests.appendChild(pay);
-		
+
 		oos.writeObject(doc);
 		showPay((Document) ois.readObject());
 	}
-	
+
 	private void showPay(Document check) {
 		// TODO after pay response
 	}
@@ -188,15 +196,15 @@ public class User extends Client {
 	private void leave() throws IOException, ClassNotFoundException {
 		Element leave = doc.createElement("leave");
 		requests.appendChild(leave);
-		
+
 		oos.writeObject(doc);
 		showLeave((Document) ois.readObject());
 	}
-	
+
 	private void showLeave(Document check) {
 		// TODO after leave response
 	}
-	
+
 	private void menuOptions(String[] options) {
 		System.out.println("\nChoose a command:");
 		int number = 1;
