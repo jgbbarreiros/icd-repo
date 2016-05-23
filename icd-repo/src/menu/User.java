@@ -11,7 +11,8 @@ import javax.xml.xpath.XPathExpressionException;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSSerializer;
 
 public class User extends Client {
 
@@ -118,15 +119,16 @@ public class User extends Client {
 		menu.setAttribute("type", type);
 		menu.setAttribute("weekday", weekday);
 		requests.appendChild(menu);
+		oos.reset();
 		oos.writeObject(doc);
 		return (Document) ois.readObject();
 	}
 
 	private void showMenu() {
 		// TODO after menu response
-		FileManager fileManager = new FileManager();
-		fileManager.load(menu);
-		fileManager.saveAs("menu");
+		DOMImplementationLS domImplementation = (DOMImplementationLS) menu.getImplementation();
+		LSSerializer lsSerializer = domImplementation.createLSSerializer();
+		System.out.println(lsSerializer.writeToString(menu));
 	}
 
 	private void order() throws DOMException, XPathExpressionException, IOException, ClassNotFoundException {
@@ -138,9 +140,13 @@ public class User extends Client {
 		requests.appendChild(order);
 		String expression;
 		for (int i = 0; i < orderList.length; i++) {
-			expression = "//item[@itemRef='" + orderList[i] + "']/@name";
-			order.appendChild((Node) xPath.compile(expression).evaluate(menu, XPathConstants.NODE));
+			expression = "//item[@itref='" + orderList[i] + "']";
+			Element item = (Element) xPath.compile(expression).evaluate(menu, XPathConstants.NODE);
+			Element itemNew = (Element) item.cloneNode(true);
+			doc.adoptNode(itemNew);
+			order.appendChild(itemNew);
 		}
+		oos.reset();
 		oos.writeObject(doc);
 		showOrder((Document) ois.readObject());
 	}

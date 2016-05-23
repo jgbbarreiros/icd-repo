@@ -8,11 +8,12 @@
 		<order id="2" status="accepted">
 			<item itref="it1"/>
 			<item itref="it3"/>
-			<item itref="it8"/>x
+			<item itref="it8"/>
 		</order>
-		<debt></debt></client>
+		<debt></debt>
+		</client>
 	<client id="2">
-		<order id ="1" status="ready">
+		<order id="1" status="ready">
 			<item itref="it2"/>
 			<item itref="it4"/>
 			<item itref="it7"/>

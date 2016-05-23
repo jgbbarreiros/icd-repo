@@ -25,6 +25,7 @@ public class ClientService extends Service {
 			try {
 				request = (Document) ois.readObject();
 				requestElement = (Element) request.getDocumentElement().getLastChild();
+				System.out.println(docToString(request));
 				requestType = getRequestType(request);
 				switch (requestType) {
 				case "menu":
@@ -85,23 +86,39 @@ public class ClientService extends Service {
 			menuItemNew.setAttribute("name", name);
 			menuElem.appendChild(menuItemNew);
 		}
+		oos.reset();
 		oos.writeObject(doc);
 	}
 
-	private void order() throws IOException {
+	private void order() throws IOException, XPathExpressionException {
 		System.out.println("order");
 
 		// database update
 		Element orderItems = (Element) requestElement.cloneNode(true);
-		doc.adoptNode(orderItems);
+		database.adoptNode(orderItems);
 		orderItems.setAttribute("status", "accepted");
-		database.getElementById(clientId + "").appendChild(orderItems);
+		String expression = "//client[@id='1']";
+		Element clientElem = (Element) xPath.compile(expression).evaluate(database, XPathConstants.NODE);
+		clientElem.appendChild(orderItems);
+		
+		expression = "sum(*/*[last()]/item/text())";
+		String orderDebt = (String) xPath.compile(expression).evaluate(request, XPathConstants.STRING);
+		double debt = 0 + Double.parseDouble(orderDebt);
+		
+		expression = "//client[@id='1']/debt";
+		Element debtElem = (Element) xPath.compile(expression).evaluate(database, XPathConstants.NODE);
+		debtElem.setTextContent(debt+"");
+		
+		FileManager fm = new FileManager();
+		fm.load(database);
+		fm.save();
 		
 		// Client response
 		Element orderElem = doc.createElement("print");
 		orderElem.appendChild(doc.createTextNode("Ordered successfully"));
 		responses.appendChild(orderElem);
 		
+		oos.reset();
 		oos.writeObject(doc);
 	}
 
