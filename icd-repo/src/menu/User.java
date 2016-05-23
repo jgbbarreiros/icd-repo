@@ -26,8 +26,8 @@ public class User extends Client {
 
 	public User() {
 		super();
+		clientType = "user";
 		keyboard = new Scanner(System.in);
-		// get var type >> var.getClass().getName();
 		date = new Date();
 		calendar = Calendar.getInstance();
 		calendar.setTime(date);
@@ -38,7 +38,7 @@ public class User extends Client {
 
 	@Override
 	public void request() {
-
+		System.out.println("User request connected = " + connected);
 		while (connected) {
 			try {
 				System.out.println("\n============================");
@@ -114,13 +114,13 @@ public class User extends Client {
 	}
 
 	private Document requestMenu() throws IOException, ClassNotFoundException {
-		Element menu = doc.createElement("menu");
+		Element menu = requests.createElement("menu");
 		menu.setAttribute("language", language);
 		menu.setAttribute("type", type);
 		menu.setAttribute("weekday", weekday);
-		requests.appendChild(menu);
+		rootElement.appendChild(menu);
 		oos.reset();
-		oos.writeObject(doc);
+		oos.writeObject(requests);
 		return (Document) ois.readObject();
 	}
 
@@ -136,18 +136,18 @@ public class User extends Client {
 		System.out.print(">> ");
 		keyboard.nextLine();
 		String[] orderList = keyboard.nextLine().trim().split(",");
-		Element order = doc.createElement("order");
-		requests.appendChild(order);
+		Element order = requests.createElement("order");
+		rootElement.appendChild(order);
 		String expression;
 		for (int i = 0; i < orderList.length; i++) {
 			expression = "//item[@itref='" + orderList[i] + "']";
 			Element item = (Element) xPath.compile(expression).evaluate(menu, XPathConstants.NODE);
 			Element itemNew = (Element) item.cloneNode(true);
-			doc.adoptNode(itemNew);
+			requests.adoptNode(itemNew);
 			order.appendChild(itemNew);
 		}
 		oos.reset();
-		oos.writeObject(doc);
+		oos.writeObject(requests);
 		showOrder((Document) ois.readObject());
 	}
 
@@ -156,21 +156,21 @@ public class User extends Client {
 	}
 
 	private void check() throws IOException, ClassNotFoundException {
-		Element check = doc.createElement("check");
-		requests.appendChild(check);
+		Element check = requests.createElement("check");
+		rootElement.appendChild(check);
 
-		Element status = doc.createElement("status");
+		Element status = requests.createElement("status");
 		check.appendChild(status);
 
-		Element debt = doc.createElement("debt");
+		Element debt = requests.createElement("debt");
 		check.appendChild(debt);
-		
-		DOMImplementationLS domImplementation = (DOMImplementationLS) doc.getImplementation();
+
+		DOMImplementationLS domImplementation = (DOMImplementationLS) requests.getImplementation();
 		LSSerializer lsSerializer = domImplementation.createLSSerializer();
-		System.out.println(lsSerializer.writeToString(doc));
-		
+		System.out.println(lsSerializer.writeToString(requests));
+
 		oos.reset();
-		oos.writeObject(doc);
+		oos.writeObject(requests);
 		showCheck((Document) ois.readObject());
 	}
 
@@ -182,10 +182,10 @@ public class User extends Client {
 	}
 
 	private void pay() throws IOException, ClassNotFoundException {
-		Element pay = doc.createElement("pay");
-		requests.appendChild(pay);
+		Element pay = requests.createElement("pay");
+		rootElement.appendChild(pay);
 
-		oos.writeObject(doc);
+		oos.writeObject(requests);
 		showPay((Document) ois.readObject());
 	}
 
@@ -194,10 +194,10 @@ public class User extends Client {
 	}
 
 	private void leave() throws IOException, ClassNotFoundException {
-		Element leave = doc.createElement("leave");
-		requests.appendChild(leave);
+		Element leave = requests.createElement("leave");
+		rootElement.appendChild(leave);
 
-		oos.writeObject(doc);
+		oos.writeObject(requests);
 		showLeave((Document) ois.readObject());
 	}
 

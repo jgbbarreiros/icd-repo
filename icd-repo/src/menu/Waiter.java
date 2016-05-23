@@ -7,12 +7,12 @@ import javax.xml.xpath.XPathConstants;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 public class Waiter extends Client {
 
 	public Waiter() {
 		super();
+		clientType = "waiter";
 	}
 
 	public void request() {
@@ -49,15 +49,15 @@ public class Waiter extends Client {
 	}
 
 	private void orders() {
-		Element clients = doc.createElement("clients");
-		requests.appendChild(clients);
+		Element clients = requests.createElement("clients");
+		rootElement.appendChild(clients);
 		try {
-			oos.writeObject(doc);
+			oos.writeObject(requests);
 			// Reads the whole clients list and orders.
-			doc = (Document) ois.readObject();
-			System.out.println(docToString(doc));
-			System.out.println(
-					(String) xPath.compile("string(//client[@id='c1']//@status)").evaluate(doc, XPathConstants.STRING));
+			requests = (Document) ois.readObject();
+			System.out.println(docToString(requests));
+			System.out.println((String) xPath.compile("string(//client[@id='c1']//@status)").evaluate(requests,
+					XPathConstants.STRING));
 		} catch (Exception e) {
 			System.out.println("Exception caught in Waiter.orders.");
 			e.printStackTrace();
@@ -65,7 +65,7 @@ public class Waiter extends Client {
 	}
 
 	public void update() {
-		System.out.println(docToString(doc));
+		System.out.println(docToString(requests));
 
 		Scanner keyboard = new Scanner(System.in);
 		boolean invalid = true;
@@ -115,8 +115,8 @@ public class Waiter extends Client {
 		c.appendChild(o);
 		e.appendChild(c);
 		request.appendChild(e);
-		//request.appendChild(e);
-		//request.adoptNode(c);
+		// request.appendChild(e);
+		// request.adoptNode(c);
 
 		System.out.println(docToString(request));
 		try {
@@ -130,7 +130,7 @@ public class Waiter extends Client {
 
 	public void aniversary() {
 		try {
-			oos.writeObject(doc);
+			oos.writeObject(requests);
 
 		} catch (IOException e) {
 			System.out.println("Exception caught in Waiter.aniversary.");

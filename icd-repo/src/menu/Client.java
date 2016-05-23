@@ -18,19 +18,23 @@ public abstract class Client {
 	public final static String DEFAULT_HOSTNAME = "localhost";
 	public final static int DEFAULT_PORT = 5025;
 	protected XPath xPath;
-	protected Document doc = null;
-	private Socket connection = null;
-	protected ObjectInputStream ois = null;
-	protected ObjectOutputStream oos = null;
-	protected boolean connected = true;
-	protected Element requests;
+	protected FileManager fileManager;
+	protected Document requests;
+	protected Element rootElement;
+
+	private Socket connection;
+	protected ObjectInputStream ois;
+	protected ObjectOutputStream oos;
+	protected boolean connected;
+	protected String clientType;
 
 	public Client() {
 		xPath = XPathFactory.newInstance().newXPath();
-		FileManager fileManager = new FileManager();
-		doc = fileManager.blank();
-		requests = doc.createElement("requests");
-		doc.appendChild(requests);
+		fileManager = new FileManager();
+		requests = fileManager.blank();
+		rootElement = requests.createElement("requests");
+		requests.appendChild(rootElement);
+		connected = false;
 	}
 
 	public void connect() {
@@ -38,6 +42,8 @@ public abstract class Client {
 			connection = new Socket(DEFAULT_HOSTNAME, DEFAULT_PORT);
 			oos = new ObjectOutputStream(connection.getOutputStream());
 			ois = new ObjectInputStream(connection.getInputStream());
+			connected = true;
+			login();
 			request();
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
@@ -53,11 +59,22 @@ public abstract class Client {
 				System.err.println(e.getMessage());
 			}
 		}
+	}
 
+	private void login() throws IOException {
+		Document login = fileManager.blank();
+		Element loginElement = login.createElement("login");
+		login.appendChild(loginElement);
+
+		Element clientElement = login.createElement("client");
+		clientElement.appendChild(login.createTextNode(clientType));
+		loginElement.appendChild(clientElement);
+
+		oos.writeObject(login);
+		oos.flush();
 	}
 
 	public abstract void request();
-	
 
 	public String docToString(Document doc) {
 		DOMImplementationLS domImplementation = (DOMImplementationLS) doc.getImplementation();

@@ -1,5 +1,7 @@
 package menu;
 
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import javax.xml.xpath.XPathConstants;
@@ -9,12 +11,12 @@ import org.w3c.dom.Node;
 
 public class WaiterService extends Service {
 
-	public WaiterService(Socket connection, Document restaurant, Document database) {
-		super(connection, restaurant, database);
+	public WaiterService(Socket connection, ObjectInputStream ois, ObjectOutputStream oos, Document menu,
+			Document database) {
+		super(connection, ois, oos, menu, database);
 	}
 
 	public void run() {
-		openStreams();
 		String requestType = "";
 		while (connected) {
 			try {
@@ -88,8 +90,8 @@ public class WaiterService extends Service {
 		String list = "//" + day + "/" + type;
 		String itemID = "//item[text() = " + name + "]/@itemID";
 		try {
-			Node parent = (Node) xPath.compile(list).evaluate(doc, XPathConstants.NODE);
-			String id = (String) xPath.compile(itemID).evaluate(doc, XPathConstants.STRING);
+			Node parent = (Node) xPath.compile(list).evaluate(responses, XPathConstants.NODE);
+			String id = (String) xPath.compile(itemID).evaluate(responses, XPathConstants.STRING);
 		} catch (Exception e) {
 			return false;
 		}

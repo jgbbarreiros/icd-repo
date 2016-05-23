@@ -16,42 +16,33 @@ import org.w3c.dom.ls.LSSerializer;
 public abstract class Service extends Thread {
 
 	protected Socket connection;
-	protected boolean connected = false;
-	protected Document doc = null;
-	protected Document menu = null;
-	protected Document database = null;
-	protected Document request = null;
-	protected ObjectInputStream ois = null;
-	protected ObjectOutputStream oos = null;
+	protected boolean connected;
+	protected Document responses;
+	protected Document menu;
+	protected Document database;
+	protected Document request;
+	protected ObjectInputStream ois;
+	protected ObjectOutputStream oos;
 	protected FileManager fileManager;
 	protected XPath xPath = XPathFactory.newInstance().newXPath();
-	protected Element responses;
+	protected Element rootElement;
 	protected int clientId;
 
-	public Service(Socket connection, Document menu, Document database) {
+	public Service(Socket connection, ObjectInputStream ois, ObjectOutputStream oos, Document menu, Document database) {
 		fileManager = new FileManager();
 		this.menu = menu;
 		this.database = database;
 		this.connection = connection;
-		doc = fileManager.blank();
-		responses = doc.createElement("responses");
-		doc.appendChild(responses);
-	}
-
-	protected void openStreams() {
-		try {
-			ois = new ObjectInputStream(this.connection.getInputStream());
-			oos = new ObjectOutputStream(this.connection.getOutputStream());
-			oos.flush();
-			connected = true;
-			System.out.println("Connection made with client...");
-		} catch (Exception e) {
-			closeStreams();
-		}
+		this.ois = ois;
+		this.oos = oos;
+		connected = true;
+		responses = fileManager.blank();
+		rootElement = responses.createElement("responses");
+		responses.appendChild(rootElement);
 	}
 
 	protected void closeStreams() {
-		System.out.println("Closing Service streams.");
+		System.out.println("Service - Client disconnected...");
 		try {
 			if (ois != null)
 				ois.close();
@@ -62,11 +53,9 @@ public abstract class Service extends Thread {
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		}
-		System.out.println("Client disconnected...");
 	}
 
 	public abstract void run();
-	
 
 	public String docToString(Document doc) {
 		DOMImplementationLS domImplementation = (DOMImplementationLS) doc.getImplementation();

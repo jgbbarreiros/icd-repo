@@ -1,6 +1,8 @@
 package menu;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import javax.xml.xpath.XPathConstants;
@@ -10,7 +12,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-public class ClientService extends Service {
+public class UserService extends Service {
 
 	private Element requestElement;
 
@@ -18,8 +20,9 @@ public class ClientService extends Service {
 	private Element debtElement;
 	private double debt;
 
-	public ClientService(Socket connection, Document menu, Document database) {
-		super(connection, menu, database);
+	public UserService(Socket connection, ObjectInputStream ois, ObjectOutputStream oos, Document menu,
+			Document database) {
+		super(connection, ois, oos, menu, database);
 		String expression;
 		try {
 			expression = "//client[@id='1']"; // TODO client id
@@ -34,8 +37,8 @@ public class ClientService extends Service {
 	}
 
 	public void run() {
-		openStreams();
 		String requestType = "";
+		System.out.println("Before - connected = " + connected);
 		while (connected) {
 			try {
 				request = (Document) ois.readObject();
@@ -79,8 +82,8 @@ public class ClientService extends Service {
 
 	private void menu() throws XPathExpressionException, IOException {
 
-		Element menuElem = doc.createElement("menu");
-		responses.appendChild(menuElem);
+		Element menuElem = responses.createElement("menu");
+		rootElement.appendChild(menuElem);
 		String expression;
 
 		// get menu for certain day and type
@@ -96,12 +99,12 @@ public class ClientService extends Service {
 					+ requestElement.getAttribute("language") + "/text()";
 			String name = (String) xPath.compile(expression).evaluate(menu, XPathConstants.STRING);
 			Element menuItemNew = (Element) menuItem.cloneNode(true);
-			doc.adoptNode(menuItemNew);
+			responses.adoptNode(menuItemNew);
 			menuItemNew.setAttribute("name", name);
 			menuElem.appendChild(menuItemNew);
 		}
 		oos.reset();
-		oos.writeObject(doc);
+		oos.writeObject(responses);
 	}
 
 	private void order() throws IOException, XPathExpressionException {
@@ -119,34 +122,33 @@ public class ClientService extends Service {
 		debtElement.setTextContent(debt + "");
 
 		FileManager fm = new FileManager();
-		fm.load(database);
-		fm.save(); // TODO update real database file
+		fm.save(database); // TODO update real database file
 
 		// client response
-		Element orderElem = doc.createElement("print");
-		orderElem.appendChild(doc.createTextNode("Ordered successfully"));
-		responses.appendChild(orderElem);
+		Element orderElem = responses.createElement("print");
+		orderElem.appendChild(responses.createTextNode("Ordered successfully"));
+		rootElement.appendChild(orderElem);
 
 		oos.reset();
-		oos.writeObject(doc);
+		oos.writeObject(responses);
 	}
 
 	private void check() throws IOException, XPathExpressionException {
-		
-		Element checkElement = doc.createElement("check");
+
+		Element checkElement = responses.createElement("check");
 		String expression = "//client[@id='1']/*";
 		NodeList clientStatus = (NodeList) xPath.compile(expression).evaluate(database, XPathConstants.NODESET);
-		//NodeList clientStatus = clientElement.getChildNodes();
+		// NodeList clientStatus = clientElement.getChildNodes();
 		for (int i = 0; i < clientStatus.getLength(); i++) {
 			Element item = (Element) clientStatus.item(i);
 			Element itemNew = (Element) item.cloneNode(true);
-			doc.adoptNode(itemNew);
+			responses.adoptNode(itemNew);
 			checkElement.appendChild(itemNew);
 		}
-		responses.appendChild(checkElement);
-		
+		rootElement.appendChild(checkElement);
+
 		oos.reset();
-		oos.writeObject(doc);
+		oos.writeObject(responses);
 	}
 
 	private void pay() {

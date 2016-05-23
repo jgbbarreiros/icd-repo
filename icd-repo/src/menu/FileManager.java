@@ -20,7 +20,6 @@ import org.xml.sax.SAXException;
 public class FileManager {
 
 	private DocumentBuilder documentBuilder;
-	private Document document;
 	private Transformer transformer;
 	private String currentDocName;
 
@@ -40,35 +39,30 @@ public class FileManager {
 	}
 
 	public Document blank() {
-		document = documentBuilder.newDocument();
-		return this.document;
-	}
-
-	public void load(Document doc) {
-		this.document = doc;
+		return documentBuilder.newDocument();
 	}
 
 	public Document load(String docName) {
-        try {
-            File file = new File(docName);
-            documentBuilder.parse(file);
-            return documentBuilder.parse(file);
-        } catch (SAXException e) {
-            System.err.println(e.getMessage());
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-        }
-        return null;
-    }
+		try {
+			File file = new File(docName);
+			documentBuilder.parse(file);
+			return documentBuilder.parse(file);
+		} catch (SAXException e) {
+			System.err.println(e.getMessage());
+		} catch (IOException e) {
+			System.err.println(e.getMessage());
+		}
+		return null;
+	}
 
-	public boolean save() {
+	public boolean save(Document document) {
 		if (currentDocName.isEmpty())
 			return false;
-		saveAs(currentDocName);
+		saveAs(document, currentDocName);
 		return true;
 	}
 
-	public boolean saveAs(String docName) {
+	public boolean saveAs(Document document, String docName) {
 		try {
 			// TODO document has root element ? go on : create and append root
 			// element

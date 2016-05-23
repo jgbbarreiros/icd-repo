@@ -1,6 +1,8 @@
 package menu;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -14,10 +16,13 @@ import org.w3c.dom.Document;
 public class Server {
 
 	public final static int DEFAULT_PORT = 5025;
-	private static ServerSocket serverSocket = null;
-	private static Document doc = null;
-	private static Document menu = null;
-	private static Document database = null;
+	private static ServerSocket serverSocket;
+	private static Document doc;
+	private static Document menu;
+	private static Document database;
+	private ObjectInputStream ois;
+	private ObjectOutputStream oos;
+	private Socket service;
 
 	public Server(String path) {
 		loadFiles(path);
@@ -36,11 +41,6 @@ public class Server {
 			menu = fm.load(menuPath);
 			database = fm.blank();
 			database = fm.load(databasePath);
-			// System.out.println((String) xPath.compile("//item[@itID=
-			// 'it1']/name/en/text()").evaluate(menu, XPathConstants.STRING));
-			// System.out.println((String)
-			// xPath.compile("string(//client[@id='c1']//@status)").evaluate(database,
-			// XPathConstants.STRING));
 		} catch (XPathExpressionException e) {
 			System.out.println("Could not find specified files.");
 		}
@@ -48,23 +48,60 @@ public class Server {
 
 	private void launch() throws IOException {
 		serverSocket = new ServerSocket(DEFAULT_PORT);
-		Socket service = null;
 
 		while (true) {
+			try {
 
-			 System.out.println("Server listening on localhost:" +
-			 DEFAULT_PORT + "...");
-			 service = serverSocket.accept();
-			 Thread th = new ClientService(service, menu, database);
-			 th.start();
-
-			// WAITS FOR A WAITER TO CONNECT
-//			System.out.println("Server listening on localhost:" + DEFAULT_PORT + "...");
-//			service = serverSocket.accept();
-//			Thread th2 = new WaiterService(service, menu, database);
-//			th2.start();
-			break;
+				System.out.println("Server listening on localhost:" + DEFAULT_PORT + "...");
+				service = serverSocket.accept();
+				openStreams();
+				Thread th;
+				switch (getClientType((Document) ois.readObject())) {
+				case "user":
+					th = new UserService(service, ois, oos, menu, database);
+					System.out.println("Creating UserService.");
+					break;
+				case "waiter":
+					th = new WaiterService(service, ois, oos, menu, database);
+					System.out.println("Creating WaiterService.");
+					break;
+				default:
+					System.out.println("Defaulted in switch...");
+					continue;
+				}
+				th.start();
+			} catch (IOException e) {
+				closeStreams();
+				continue;
+			} catch (ClassNotFoundException e) {
+				System.out.println("Problem in reading object.");
+			}
 		}
+	}
+
+	protected void openStreams() throws IOException {
+		ois = new ObjectInputStream(service.getInputStream());
+		oos = new ObjectOutputStream(service.getOutputStream());
+		oos.flush();
+		System.out.println("Connection made with client...");
+	}
+
+	protected void closeStreams() {
+		System.out.println("Server - Client disconnected...");
+		try {
+			if (ois != null)
+				ois.close();
+			if (oos != null)
+				oos.close();
+			if (service != null)
+				service.close();
+		} catch (IOException e) {
+			System.err.println(e.getMessage());
+		}
+	}
+
+	private String getClientType(Document login) {
+		return login.getDocumentElement().getFirstChild().getTextContent();
 	}
 
 	public static void main(String[] args) {
