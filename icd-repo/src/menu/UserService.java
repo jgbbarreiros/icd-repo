@@ -14,26 +14,35 @@ import org.w3c.dom.NodeList;
 
 public class UserService extends Service {
 
+	private static int userId = 0;
 	private Element requestElement;
-
-	private Element clientElement;
+	private Element userElement;
 	private Element debtElement;
 	private double debt;
+	private int orderId;
 
 	public UserService(Socket connection, ObjectInputStream ois, ObjectOutputStream oos, Document menu,
 			Document database) {
 		super(connection, ois, oos, menu, database);
-		String expression;
-		try {
-			expression = "//client[@id='1']"; // TODO client id
-			clientElement = (Element) xPath.compile(expression).evaluate(database, XPathConstants.NODE);
-
-			expression = "//client[@id='1']/debt"; // TODO client id
-			debtElement = (Element) xPath.compile(expression).evaluate(database, XPathConstants.NODE);
-		} catch (XPathExpressionException e) {
-			e.printStackTrace();
-		}
-		debt = Double.parseDouble(debtElement.getTextContent());
+		debt = 0.0;
+		orderId = 0;
+		createUserEntry();
+	}
+	
+	private void createUserEntry() {
+		
+		Element usersElement = database.getDocumentElement();
+		
+		userElement = database.createElement("user");
+		userElement.setAttribute("id", Integer.toString(++userId));
+		usersElement.appendChild(userElement);
+		
+		debtElement = database.createElement("debt");
+		debtElement.appendChild(database.createTextNode(Double.toString(debt)));
+		userElement.appendChild(debtElement);
+		
+		System.out.println(docToString(database));
+		
 	}
 
 	public void run() {
@@ -112,8 +121,9 @@ public class UserService extends Service {
 		// database update
 		Element orderItems = (Element) requestElement.cloneNode(true);
 		database.adoptNode(orderItems);
+		orderItems.setAttribute("id", Integer.toString(++orderId));
 		orderItems.setAttribute("status", "accepted");
-		clientElement.appendChild(orderItems);
+		userElement.appendChild(orderItems);
 
 		String expression = "sum(*/*[last()]/item/text())";
 		String orderDebt = (String) xPath.compile(expression).evaluate(request, XPathConstants.STRING);
@@ -124,10 +134,12 @@ public class UserService extends Service {
 		FileManager fm = new FileManager();
 		fm.save(database); // TODO update real database file
 
-		// client response
-		Element orderElem = responses.createElement("print");
-		orderElem.appendChild(responses.createTextNode("Ordered successfully"));
-		rootElement.appendChild(orderElem);
+		// user response
+		Element orderElement = responses.createElement("print");
+		orderElement.appendChild(responses.createTextNode("Ordered successfully"));
+		rootElement.appendChild(orderElement);
+		
+		fileManager.saveAs(database, "database.xml");
 
 		oos.reset();
 		oos.writeObject(responses);
@@ -136,11 +148,11 @@ public class UserService extends Service {
 	private void check() throws IOException, XPathExpressionException {
 
 		Element checkElement = responses.createElement("check");
-		String expression = "//client[@id='1']/*";
-		NodeList clientStatus = (NodeList) xPath.compile(expression).evaluate(database, XPathConstants.NODESET);
-		// NodeList clientStatus = clientElement.getChildNodes();
-		for (int i = 0; i < clientStatus.getLength(); i++) {
-			Element item = (Element) clientStatus.item(i);
+		String expression = "//user[@id='" + userId + "']/*";
+		NodeList userStatus = (NodeList) xPath.compile(expression).evaluate(database, XPathConstants.NODESET);
+		// NodeList userStatus = userElement.getChildNodes();
+		for (int i = 0; i < userStatus.getLength(); i++) {
+			Element item = (Element) userStatus.item(i);
 			Element itemNew = (Element) item.cloneNode(true);
 			responses.adoptNode(itemNew);
 			checkElement.appendChild(itemNew);
