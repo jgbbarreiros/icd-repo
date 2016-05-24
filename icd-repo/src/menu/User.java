@@ -179,6 +179,7 @@ public class User extends Client {
 		DOMImplementationLS domImplementation = (DOMImplementationLS) check.getImplementation();
 		LSSerializer lsSerializer = domImplementation.createLSSerializer();
 		System.out.println(lsSerializer.writeToString(check));
+		fileManager.saveAs(check, "check.xml");
 	}
 
 	private void pay() throws IOException, ClassNotFoundException {

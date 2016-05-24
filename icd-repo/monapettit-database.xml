@@ -1,12 +1,9 @@
-<clients>
-	<client id="1">
+<users>
+	<user id="0">
 		<debt>0.0</debt>
-		<order status="accepted">
+		<order id="1" status="accepted">
 			<item itref="1" name="Garlic Bread">1.25</item>
 			<item itref="3" name="Duck Rice">1.25</item>
 		</order>
-		</client>
-	<client id="2">
-		<debt>0.0</debt>
-	</client>
-</clients>
+		</user>
+</users>

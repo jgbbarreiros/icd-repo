@@ -26,7 +26,6 @@ public abstract class Service extends Thread {
 	protected FileManager fileManager;
 	protected XPath xPath = XPathFactory.newInstance().newXPath();
 	protected Element rootElement;
-	protected int clientId;
 
 	public Service(Socket connection, ObjectInputStream ois, ObjectOutputStream oos, Document menu, Document database) {
 		fileManager = new FileManager();
