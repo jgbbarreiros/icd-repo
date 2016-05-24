@@ -33,6 +33,7 @@ public class WaiterService extends Service {
 					aniversary();
 					break;
 				default:
+					System.out.println("Waiter service defaulted.");
 					break;
 				}
 
@@ -65,36 +66,26 @@ public class WaiterService extends Service {
 
 	public void update(Document d) {
 		System.out.println("RETURNING UPDATE");
-		docToString(d);
+		System.out.println(docToString(d));
 
 		try {
-			String client = (String) xPath.compile("//client/@id/text())").evaluate(database, XPathConstants.STRING);
-			String order = (String) xPath.compile("//order/@id/text())").evaluate(database, XPathConstants.STRING);
-			Node n = (Node) xPath.compile("//client[@id = " + client + "]/order[@id = " + order + "]")
-					.evaluate(database, XPathConstants.NODE);
-			System.out.println("Node > " + n.toString());
-			oos.writeObject(database);
+			System.out.println((String) xPath.compile("string(//order/@status)").evaluate(d, XPathConstants.STRING));
+			// String client = (String)
+			// xPath.compile("//client/@id/text())").evaluate(d,
+			// XPathConstants.STRING);
+			// String order = (String)
+			// xPath.compile("//order/@id/text())").evaluate(d,
+			// XPathConstants.STRING);
+			// Node n = (Node) xPath.compile("//client[@id = " + client +
+			// "]/order[@id = " + order + "]")
+			// .evaluate(database, XPathConstants.NODE);
+			// oos.writeObject(database);
 		} catch (Exception e) {
-			e.printStackTrace();
 			System.out.println("Couldnt get element.");
 		}
 	}
 
 	public void aniversary() {
 		System.out.println("RETURNING ANIVERSARY");
-	}
-
-	// ======================= EXAMPLE OF XPATH USAGE.
-	// ===========================
-	public boolean addItem(String name, String day, String type, float price) {
-		String list = "//" + day + "/" + type;
-		String itemID = "//item[text() = " + name + "]/@itemID";
-		try {
-			Node parent = (Node) xPath.compile(list).evaluate(responses, XPathConstants.NODE);
-			String id = (String) xPath.compile(itemID).evaluate(responses, XPathConstants.STRING);
-		} catch (Exception e) {
-			return false;
-		}
-		return true;
 	}
 }

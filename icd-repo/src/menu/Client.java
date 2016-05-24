@@ -31,10 +31,15 @@ public abstract class Client {
 	public Client() {
 		xPath = XPathFactory.newInstance().newXPath();
 		fileManager = new FileManager();
-		requests = fileManager.blank();
-		rootElement = requests.createElement("requests");
-		requests.appendChild(rootElement);
+		requests = createRequestDocument();
 		connected = false;
+	}
+
+	protected Document createRequestDocument() {
+		Document d = fileManager.blank();
+		rootElement = d.createElement("requests");
+		d.appendChild(rootElement);
+		return d;
 	}
 
 	public void connect() {

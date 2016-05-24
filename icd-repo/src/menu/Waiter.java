@@ -20,12 +20,15 @@ public class Waiter extends Client {
 
 		Scanner keyboard = new Scanner(System.in);
 		while (connected) {
+			requests = createRequestDocument();
+
 			System.out.println("Choose a command:\n");
 			System.out.println("\t 1. Check orders");
 			System.out.println("\t 2. Modify status.");
 			System.out.println("\t 3. Check aniversary.");
 			System.out.println("\t 4. Leave");
 			System.out.print(">> ");
+			
 			switch (keyboard.nextInt()) {
 			case 1:
 				orders();
@@ -54,9 +57,9 @@ public class Waiter extends Client {
 		try {
 			oos.writeObject(requests);
 			// Reads the whole clients list and orders.
-			requests = (Document) ois.readObject();
-			System.out.println(docToString(requests));
-			System.out.println((String) xPath.compile("string(//client[@id='c1']//@status)").evaluate(requests,
+			Document response = (Document) ois.readObject();
+			System.out.println(docToString(response));
+			System.out.println((String) xPath.compile("string(//client[@id='c1']//@status)").evaluate(response,
 					XPathConstants.STRING));
 		} catch (Exception e) {
 			System.out.println("Exception caught in Waiter.orders.");
@@ -65,12 +68,19 @@ public class Waiter extends Client {
 	}
 
 	public void update() {
+		Element e = requests.createElement("update");
+		rootElement.appendChild(e);
 		System.out.println(docToString(requests));
 
 		Scanner keyboard = new Scanner(System.in);
 		boolean invalid = true;
 		System.out.print("Insert client ID: > ");
 		String cid = Integer.toString(keyboard.nextInt());
+		Element c = requests.createElement("client");
+		c.setAttribute("id", cid);
+		e.appendChild(c);
+		System.out.println(docToString(requests));
+
 		System.out.print("Insert order ID: > ");
 		String oid = Integer.toString(keyboard.nextInt());
 		String status = "";
@@ -103,24 +113,14 @@ public class Waiter extends Client {
 			}
 		}
 		keyboard.close();
-
-		FileManager fm = new FileManager();
-		Document request = fm.blank();
-		Element e = request.createElement("update");
-		Element c = request.createElement("client");
-		c.setAttribute("id", cid);
-		Element o = request.createElement("order");
-		o.setAttribute("id", oid);
-		o.setAttribute("status", status);
-		c.appendChild(o);
-		e.appendChild(c);
-		request.appendChild(e);
-		// request.appendChild(e);
-		// request.adoptNode(c);
-
-		System.out.println(docToString(request));
 		try {
-			oos.writeObject(request);
+			Element o = requests.createElement("order");
+			o.setAttribute("id", oid);
+			o.setAttribute("status", status);
+			c.appendChild(o);
+			System.out.println(docToString(requests));
+
+			oos.writeObject(requests);
 			// Reads the order to know if it was updated.
 			// doc = (Document) ois.readObject();
 		} catch (Exception e1) {
