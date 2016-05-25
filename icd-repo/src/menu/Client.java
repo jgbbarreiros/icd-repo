@@ -51,7 +51,7 @@ public abstract class Client {
 			login();
 			request();
 		} catch (Exception e) {
-			System.err.println(e.getMessage());
+			e.printStackTrace();
 		} finally {
 			try {
 				if (ois != null)
@@ -61,7 +61,7 @@ public abstract class Client {
 				if (connection != null)
 					connection.close();
 			} catch (IOException e) {
-				System.err.println(e.getMessage());
+				e.printStackTrace();
 			}
 		}
 	}

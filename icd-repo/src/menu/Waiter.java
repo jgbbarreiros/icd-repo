@@ -10,15 +10,17 @@ import org.w3c.dom.Element;
 
 public class Waiter extends Client {
 
+	private Scanner keyboard;
+
 	public Waiter() {
 		super();
 		clientType = "waiter";
+		keyboard = new Scanner(System.in);
 	}
 
 	public void request() {
 		System.out.println("waiter requested");
 
-		Scanner keyboard = new Scanner(System.in);
 		while (connected) {
 			requests = createRequestDocument();
 
@@ -28,8 +30,8 @@ public class Waiter extends Client {
 			System.out.println("\t 3. Check aniversary.");
 			System.out.println("\t 4. Leave");
 			System.out.print(">> ");
-			
-			switch (keyboard.nextInt()) {
+			int choice = keyboard.nextInt();
+			switch (choice) {
 			case 1:
 				orders();
 				break;
@@ -52,14 +54,14 @@ public class Waiter extends Client {
 	}
 
 	private void orders() {
-		Element clients = requests.createElement("clients");
-		rootElement.appendChild(clients);
+		Element users = requests.createElement("users");
+		rootElement.appendChild(users);
 		try {
 			oos.writeObject(requests);
 			// Reads the whole clients list and orders.
 			Document response = (Document) ois.readObject();
 			System.out.println(docToString(response));
-			System.out.println((String) xPath.compile("string(//client[@id='c1']//@status)").evaluate(response,
+			System.out.println((String) xPath.compile("string(//user[@id='c1']//@status)").evaluate(response,
 					XPathConstants.STRING));
 		} catch (Exception e) {
 			System.out.println("Exception caught in Waiter.orders.");
@@ -72,11 +74,11 @@ public class Waiter extends Client {
 		rootElement.appendChild(e);
 		System.out.println(docToString(requests));
 
-		Scanner keyboard = new Scanner(System.in);
 		boolean invalid = true;
-		System.out.print("Insert client ID: > ");
+		System.out.print("Insert user ID: > ");
 		String cid = Integer.toString(keyboard.nextInt());
-		Element c = requests.createElement("client");
+
+		Element c = requests.createElement("user");
 		c.setAttribute("id", cid);
 		e.appendChild(c);
 		System.out.println(docToString(requests));
@@ -85,13 +87,14 @@ public class Waiter extends Client {
 		String oid = Integer.toString(keyboard.nextInt());
 		String status = "";
 		while (invalid) {
-			System.out.println("Choose new status for client \"" + cid + "\" with order id \"" + oid + "\":\n");
+			System.out.println("Choose new status for user \"" + cid + "\" with order id \"" + oid + "\":\n");
 			System.out.println("\t 1. Accepted");
 			System.out.println("\t 2. Ready.");
 			System.out.println("\t 3. Delivered.");
 			System.out.println("\t 4. Complete");
 			System.out.print(">> ");
-			switch (keyboard.nextInt()) {
+			int choice = keyboard.nextInt();
+			switch (choice) {
 			case 1:
 				status = "accepted";
 				invalid = false;
@@ -112,7 +115,6 @@ public class Waiter extends Client {
 				System.out.println("Please choose a valid status.");
 			}
 		}
-		keyboard.close();
 		try {
 			Element o = requests.createElement("order");
 			o.setAttribute("id", oid);
@@ -121,8 +123,15 @@ public class Waiter extends Client {
 			System.out.println(docToString(requests));
 
 			oos.writeObject(requests);
-			// Reads the order to know if it was updated.
-			// doc = (Document) ois.readObject();
+			Document d = (Document) ois.readObject();
+			System.out.println(docToString(d));
+			String s = (String) xPath.compile("string(//order/@status)").evaluate(d, XPathConstants.STRING);
+			System.out.println("s is = " + s);
+			if (status.equals(s)) {
+				System.out.println("User's order updated succesfully.");
+			} else {
+				System.out.println("Could not update user's order.");
+			}
 		} catch (Exception e1) {
 			System.out.println("Exception caught in Waiter.update.");
 		}

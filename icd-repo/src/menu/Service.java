@@ -35,9 +35,14 @@ public abstract class Service extends Thread {
 		this.ois = ois;
 		this.oos = oos;
 		connected = true;
-		responses = fileManager.blank();
-		rootElement = responses.createElement("responses");
-		responses.appendChild(rootElement);
+		responses = createRequestDocument();
+	}
+
+	protected Document createRequestDocument() {
+		Document d = fileManager.blank();
+		rootElement = d.createElement("responses");
+		d.appendChild(rootElement);
+		return d;
 	}
 
 	protected void closeStreams() {
