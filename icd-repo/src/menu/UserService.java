@@ -78,7 +78,7 @@ public class UserService extends Service {
 				}
 
 			} catch (Exception e) {
-				System.err.println(e.getMessage());
+				System.err.println("User sevice while " + e.getMessage());
 				connected = false;
 			}
 		}
@@ -163,11 +163,24 @@ public class UserService extends Service {
 		oos.writeObject(responses);
 	}
 
-	private void pay() {
-
+	private void pay() throws IOException {
+		
+		Element leaveElement = responses.createElement("print");
+		leaveElement.appendChild(responses.createTextNode("Paid"));
+		rootElement.appendChild(leaveElement);
+		
+		oos.reset();
+		oos.writeObject(responses);
 	}
 
-	private void leave() {
-
+	private void leave() throws IOException {
+		connected = false;
+		
+		Element leaveElement = responses.createElement("print");
+		leaveElement.appendChild(responses.createTextNode("Ok"));
+		rootElement.appendChild(leaveElement);
+		
+		oos.reset();
+		oos.writeObject(responses);
 	}
 }

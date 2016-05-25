@@ -132,6 +132,10 @@ public class User extends Client {
 	}
 
 	private void order() throws DOMException, XPathExpressionException, IOException, ClassNotFoundException {
+		if (menu == null) {
+			System.out.println("You need to request a menu first");
+			return;
+		}
 		System.out.println("\nInsert item id's separated by commas:");
 		System.out.print(">> ");
 		keyboard.nextLine();
@@ -185,25 +189,33 @@ public class User extends Client {
 	private void pay() throws IOException, ClassNotFoundException {
 		Element pay = requests.createElement("pay");
 		rootElement.appendChild(pay);
-
+		
+		oos.reset();
 		oos.writeObject(requests);
 		showPay((Document) ois.readObject());
 	}
 
 	private void showPay(Document check) {
 		// TODO after pay response
+		DOMImplementationLS domImplementation = (DOMImplementationLS) check.getImplementation();
+		LSSerializer lsSerializer = domImplementation.createLSSerializer();
+		System.out.println(lsSerializer.writeToString(check));
 	}
 
 	private void leave() throws IOException, ClassNotFoundException {
 		Element leave = requests.createElement("leave");
 		rootElement.appendChild(leave);
-
+		
+		oos.reset();
 		oos.writeObject(requests);
 		showLeave((Document) ois.readObject());
 	}
 
 	private void showLeave(Document check) {
 		// TODO after leave response
+		DOMImplementationLS domImplementation = (DOMImplementationLS) check.getImplementation();
+		LSSerializer lsSerializer = domImplementation.createLSSerializer();
+		System.out.println(lsSerializer.writeToString(check));
 	}
 
 	private void menuOptions(String[] options) {
