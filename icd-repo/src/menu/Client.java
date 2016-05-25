@@ -16,7 +16,7 @@ import org.w3c.dom.ls.LSSerializer;
 
 public abstract class Client {
 
-	public final static String DEFAULT_HOSTNAME = "194.210.195.164";
+	public final static String DEFAULT_HOSTNAME = "localhost";
 	public final static int DEFAULT_PORT = 5025;
 	protected XPath xPath;
 	protected FileManager fileManager;
