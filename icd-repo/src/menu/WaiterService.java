@@ -61,9 +61,7 @@ public class WaiterService extends Service {
 	private void orders() {
 		System.out.println("RETURNING ORDERS");
 		try {
-			// System.out.println((String)
-			// xPath.compile("string(//client[@id='c1']//@status)").evaluate(database,
-			// XPathConstants.STRING));
+			oos.reset();
 			oos.writeObject(database);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -83,8 +81,8 @@ public class WaiterService extends Service {
 			System.out.println("Attempting to change user id=\"" + userId + "\" order=\"" + orderId
 					+ "\" with current status=\"" + currentStatus + "\" to new status=\"" + newStatus + "\"");
 
-			Element e = (Element) xPath.compile("//user[@id = \"" + userId + "\"]/order[@id=\"" + orderId + "\"]")
-					.evaluate(database, XPathConstants.NODE);
+			String expression = "//user[@id = \"" + userId + "\"]/order[@id=\"" + orderId + "\"]";
+			Element e = (Element) xPath.compile(expression).evaluate(database, XPathConstants.NODE);
 			e.setAttribute("status", newStatus);
 
 			System.out.println(docToString(database));

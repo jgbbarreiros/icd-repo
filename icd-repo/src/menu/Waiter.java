@@ -1,6 +1,7 @@
 package menu;
 
 import java.io.IOException;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import javax.xml.xpath.XPathConstants;
@@ -61,7 +62,7 @@ public class Waiter extends Client {
 			// Reads the whole clients list and orders.
 			Document response = (Document) ois.readObject();
 			System.out.println(docToString(response));
-			System.out.println((String) xPath.compile("string(//user[@id='c1']//@status)").evaluate(response,
+			System.out.println((String) xPath.compile("string(//user[@id='0']//@status)").evaluate(response,
 					XPathConstants.STRING));
 		} catch (Exception e) {
 			System.out.println("Exception caught in Waiter.orders.");
@@ -70,29 +71,19 @@ public class Waiter extends Client {
 	}
 
 	public void update() {
-		Element e = requests.createElement("update");
-		rootElement.appendChild(e);
-		System.out.println(docToString(requests));
-
 		boolean invalid = true;
 		System.out.print("Insert user ID: > ");
 		String cid = Integer.toString(keyboard.nextInt());
-
-		Element c = requests.createElement("user");
-		c.setAttribute("id", cid);
-		e.appendChild(c);
-		System.out.println(docToString(requests));
 
 		System.out.print("Insert order ID: > ");
 		String oid = Integer.toString(keyboard.nextInt());
 		String status = "";
 		while (invalid) {
-			System.out.println("Choose new status for user \"" + cid + "\" with order id \"" + oid + "\":\n");
+			System.out.println("Choose new status for user \"" + cid + "\" with order id \"" + oid + "\":");
 			System.out.println("\t 1. Accepted");
 			System.out.println("\t 2. Ready.");
 			System.out.println("\t 3. Delivered.");
-			System.out.println("\t 4. Complete");
-			System.out.print(">> ");
+			System.out.println("\t 4. Complete \n >> ");
 			int choice = keyboard.nextInt();
 			switch (choice) {
 			case 1:
@@ -116,18 +107,21 @@ public class Waiter extends Client {
 			}
 		}
 		try {
+			Element e = requests.createElement("update");
+			Element c = requests.createElement("user");
 			Element o = requests.createElement("order");
-			o.setAttribute("id", oid);
-			o.setAttribute("status", status);
+			rootElement.appendChild(e);
+			e.appendChild(c);
 			c.appendChild(o);
-			System.out.println(docToString(requests));
-
+			c.setAttribute("id", cid); // client id attribute
+			o.setAttribute("id", oid); // order id attribute
+			o.setAttribute("status", status); // order status
 			oos.writeObject(requests);
+
 			Document d = (Document) ois.readObject();
 			System.out.println(docToString(d));
-			String s = (String) xPath.compile("string(//order/@status)").evaluate(d, XPathConstants.STRING);
-			System.out.println("s is = " + s);
-			if (status.equals(s)) {
+			String confirmation = (String) xPath.compile("string(//order/@status)").evaluate(d, XPathConstants.STRING);
+			if (status.equals(confirmation)) {
 				System.out.println("User's order updated succesfully.");
 			} else {
 				System.out.println("Could not update user's order.");
@@ -139,9 +133,20 @@ public class Waiter extends Client {
 
 	public void aniversary() {
 		try {
-			oos.writeObject(requests);
+			System.out.print("Aniversary of client ID: \n>> ");
+			String cid = Integer.toString(keyboard.nextInt());
 
+			Element a = requests.createElement("aniversary");
+			Element c = requests.createElement("client");
+			c.setAttribute("id", cid);
+			rootElement.appendChild(a);
+			a.appendChild(c);
+
+			oos.writeObject(requests);
+		} catch (InputMismatchException e) {
+			System.out.println("Please introduce a valid INTEGER id.");
 		} catch (IOException e) {
+
 			System.out.println("Exception caught in Waiter.aniversary.");
 		}
 	}
