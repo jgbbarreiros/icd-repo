@@ -3,6 +3,7 @@ package menu;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.ConnectException;
 import java.net.Socket;
 
 import javax.xml.xpath.XPath;
@@ -50,6 +51,8 @@ public abstract class Client {
 			connected = true;
 			login();
 			request();
+		} catch (ConnectException e) {
+			System.out.println("There is no server listenning. \n Leaving.");
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
