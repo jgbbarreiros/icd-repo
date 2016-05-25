@@ -165,6 +165,9 @@ public class UserService extends Service {
 
 	private void pay() throws IOException {
 		
+		debt = 0.0;
+		debtElement.setTextContent(Double.toString(debt));
+		
 		Element leaveElement = responses.createElement("print");
 		leaveElement.appendChild(responses.createTextNode("Paid"));
 		rootElement.appendChild(leaveElement);
