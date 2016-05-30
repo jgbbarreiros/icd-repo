@@ -5,6 +5,7 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -24,13 +25,12 @@ public class Waiter extends Client {
 
 		while (connected) {
 			requests = createRequestDocument();
-
+			System.out.println("========================\n");
 			System.out.println("Choose a command:\n");
 			System.out.println("\t 1. Check orders");
 			System.out.println("\t 2. Modify status.");
 			System.out.println("\t 3. Check aniversary.");
-			System.out.println("\t 4. Leave");
-			System.out.print(">> ");
+			System.out.print("\t 4. Leave \n>> ");
 			int choice = keyboard.nextInt();
 			switch (choice) {
 			case 1:
@@ -83,7 +83,7 @@ public class Waiter extends Client {
 			System.out.println("\t 1. Accepted");
 			System.out.println("\t 2. Ready.");
 			System.out.println("\t 3. Delivered.");
-			System.out.println("\t 4. Complete \n >> ");
+			System.out.print("\t 4. Complete \n >> ");
 			int choice = keyboard.nextInt();
 			switch (choice) {
 			case 1:
@@ -133,21 +133,33 @@ public class Waiter extends Client {
 
 	public void aniversary() {
 		try {
-			System.out.print("Aniversary of client ID: \n>> ");
+			System.out.print("Aniversary of user ID: \n>> ");
 			String cid = Integer.toString(keyboard.nextInt());
 
 			Element a = requests.createElement("aniversary");
-			Element c = requests.createElement("client");
+			Element c = requests.createElement("user");
 			c.setAttribute("id", cid);
 			rootElement.appendChild(a);
 			a.appendChild(c);
 
 			oos.writeObject(requests);
+			Document r = (Document) ois.readObject();
+			String expression = "string(//user[@id = \"" + cid + "\"]/@birthday)";
+			String confirmation = (String) xPath.compile(expression).evaluate(r, XPathConstants.STRING);
+			if (confirmation.equalsIgnoreCase("yes")) {
+				confirmation = "IS";
+			} else {
+				confirmation = "IS NOT";
+			}
+			System.out.println(">>>> It " + confirmation + " user[" + cid + "]'s birthday.");
 		} catch (InputMismatchException e) {
 			System.out.println("Please introduce a valid INTEGER id.");
 		} catch (IOException e) {
-
 			System.out.println("Exception caught in Waiter.aniversary.");
+		} catch (ClassNotFoundException e) {
+			System.out.println("Exception in reading in Waiter.aniversary.");
+		} catch (XPathExpressionException e) {
+			System.out.println("Expection in xPath expression. Couldn't get evaluate in Waiter.aniversary.");
 		}
 	}
 
