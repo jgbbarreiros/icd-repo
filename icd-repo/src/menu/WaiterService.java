@@ -33,7 +33,7 @@ public class WaiterService extends Service {
 					update(d);
 					break;
 				case "aniversary":
-					aniversary();
+					aniversary(d);
 					break;
 				default:
 					System.out.println("Waiter service defaulted.");
@@ -86,13 +86,13 @@ public class WaiterService extends Service {
 			e.setAttribute("status", newStatus);
 
 			System.out.println(docToString(database));
-			Element c = responses.createElement("user");
+			Element u = responses.createElement("user");
 			Element o = responses.createElement("order");
-			c.setAttribute("id", userId);
+			u.setAttribute("id", userId);
 			o.setAttribute("id", orderId);
 			o.setAttribute("status", newStatus);
-			c.appendChild(o);
-			rootElement.appendChild(c);
+			u.appendChild(o);
+			rootElement.appendChild(u);
 			oos.writeObject(responses);
 		} catch (XPathException e) {
 			System.out.println("Couldnt get element.");
@@ -101,7 +101,21 @@ public class WaiterService extends Service {
 		}
 	}
 
-	public void aniversary() {
+	public void aniversary(Document d) {
 		System.out.println("RETURNING ANIVERSARY");
+		try {
+			String userId = (String) xPath.compile("string(//user/@id)").evaluate(d, XPathConstants.STRING);
+			String expression = "string(//user[@id = \"" + userId + "\"]/@birthday)";
+			String birthday = (String) xPath.compile(expression).evaluate(database, XPathConstants.STRING);
+			Element u = responses.createElement("user");
+			u.setAttribute("id", userId);
+			u.setAttribute("birthday", birthday);
+			rootElement.appendChild(u);
+			oos.writeObject(responses);
+		} catch (XPathException e) {
+			System.out.println("Couldnt get element.");
+		} catch (Exception e) {
+			System.out.println("Error while getting birthday in WaiterService.aniversary.");
+		}
 	}
 }

@@ -1,5 +1,5 @@
 <users>
-	<user id="0">
+	<user id="0" birthday="yes">
 		<debt>0.0</debt>
 		<order id="1" status="accepted">
 			<item itref="1" name="Garlic Bread">1.25</item>
