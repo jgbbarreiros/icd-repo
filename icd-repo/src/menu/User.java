@@ -19,10 +19,8 @@ public class User extends Client {
 	private Document menu;
 	private Calendar calendar;
 	private Date date;
-	private String weekday;
 	private String language;
 	private Scanner keyboard;
-	private String type;
 
 	public User() {
 		super();
@@ -32,8 +30,6 @@ public class User extends Client {
 		calendar = Calendar.getInstance();
 		calendar.setTime(date);
 		language = "en";
-		weekday = calendar.get(Calendar.DAY_OF_WEEK) > 5 ? "weekday" : "restday";
-		type = calendar.get(Calendar.HOUR_OF_DAY) < 19 ? "lunch" : "dinner";
 	}
 
 	@Override
@@ -84,11 +80,24 @@ public class User extends Client {
 	private void menu() throws ClassNotFoundException, IOException {
 
 		menuOptions(new String[] { "Current date", "Other date", "Back" });
+		String type = null;
+		String weekday = null;
 		switch (keyboard.nextInt()) {
 		case 1:
+			type = calendar.get(Calendar.HOUR_OF_DAY) < 19 ? "lunch" : "dinner";
+			weekday = calendar.get(Calendar.DAY_OF_WEEK) > 6 || calendar.get(Calendar.DAY_OF_WEEK) == 1 ? "restday"
+					: "weekday";
+			System.out.println(calendar.get(Calendar.DAY_OF_WEEK));
+			menu = requestMenu(type, weekday);
+			showMenu(menu);
 			break;
 		case 2:
-			setDate();
+			Calendar cal = setDate();
+			type = cal.get(Calendar.HOUR_OF_DAY) < 19 ? "lunch" : "dinner";
+			weekday = calendar.get(Calendar.DAY_OF_WEEK) > 6 || calendar.get(Calendar.DAY_OF_WEEK) == 1 ? "restday"
+					: "weekday";
+			System.out.println(cal.get(Calendar.DAY_OF_WEEK));
+			showMenu(requestMenu(type, weekday));
 			break;
 		case 3:
 			return;
@@ -96,11 +105,9 @@ public class User extends Client {
 			System.out.println("Please choose a valid option.");
 			break;
 		}
-		menu = requestMenu();
-		showMenu();
 	}
 
-	private void setDate() {
+	private Calendar setDate() {
 		System.out.print("year = ");
 		int year = keyboard.nextInt();
 		System.out.print("month = ");
@@ -109,12 +116,12 @@ public class User extends Client {
 		int day = keyboard.nextInt();
 		System.out.print("hour = ");
 		int hour = keyboard.nextInt();
-		calendar.set(year, month, day, hour, 0);
-		weekday = calendar.get(Calendar.DAY_OF_WEEK) > 5 ? "weekday" : "restday";
-		type = hour < 19 ? "lunch" : "dinner";
+		Calendar cal = Calendar.getInstance();
+		cal.set(year, month, day, hour, 0);
+		return cal;
 	}
 
-	private Document requestMenu() throws IOException, ClassNotFoundException {
+	private Document requestMenu(String type, String weekday) throws IOException, ClassNotFoundException {
 		Element menu = requests.createElement("menu");
 		menu.setAttribute("language", language);
 		menu.setAttribute("type", type);
@@ -125,7 +132,7 @@ public class User extends Client {
 		return (Document) ois.readObject();
 	}
 
-	private void showMenu() {
+	private void showMenu(Document menu) {
 		// TODO after menu response
 		DOMImplementationLS domImplementation = (DOMImplementationLS) menu.getImplementation();
 		LSSerializer lsSerializer = domImplementation.createLSSerializer();
@@ -134,7 +141,7 @@ public class User extends Client {
 
 	private void order() throws DOMException, XPathExpressionException, IOException, ClassNotFoundException {
 		if (menu == null) {
-			System.out.println("You need to request a menu first");
+			System.out.println("You need to request today's menu first");
 			return;
 		}
 		System.out.println("\nInsert item id's separated by commas:");
