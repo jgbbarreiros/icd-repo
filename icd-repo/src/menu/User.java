@@ -39,6 +39,7 @@ public class User extends Client {
 	@Override
 	public void request() {
 		System.out.println("User request connected = " + connected);
+		sendData();
 		while (connected) {
 			try {
 				System.out.println("\n============================");
@@ -189,7 +190,7 @@ public class User extends Client {
 	private void pay() throws IOException, ClassNotFoundException {
 		Element pay = requests.createElement("pay");
 		rootElement.appendChild(pay);
-		
+
 		oos.reset();
 		oos.writeObject(requests);
 		showPay((Document) ois.readObject());
@@ -205,7 +206,7 @@ public class User extends Client {
 	private void leave() throws IOException, ClassNotFoundException {
 		Element leave = requests.createElement("leave");
 		rootElement.appendChild(leave);
-		
+
 		oos.reset();
 		oos.writeObject(requests);
 		showLeave((Document) ois.readObject());
@@ -227,4 +228,25 @@ public class User extends Client {
 		System.out.print(">> ");
 	}
 
+	private void sendData() {
+		Document d = fileManager.blank();
+		Element data = d.createElement("data");
+		String input = "";
+		menuOptions(new String[] { "My birthday is today", "My birthday is NOT today" });
+		switch (keyboard.nextInt()) {
+		case 1:
+			input = "yes";
+			break;
+		case 2:
+			input = "no";
+		}
+		data.setAttribute("birthday", input);
+		d.appendChild(data);
+		System.out.println(docToString(d));
+		try {
+			oos.writeObject(d);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

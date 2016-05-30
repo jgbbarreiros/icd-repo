@@ -28,26 +28,26 @@ public class UserService extends Service {
 		orderId = 0;
 		createUserEntry();
 	}
-	
+
 	private void createUserEntry() {
-		
 		Element usersElement = database.getDocumentElement();
-		
+
 		userElement = database.createElement("user");
 		userElement.setAttribute("id", Integer.toString(++userId));
 		usersElement.appendChild(userElement);
-		
+
 		debtElement = database.createElement("debt");
 		debtElement.appendChild(database.createTextNode(Double.toString(debt)));
 		userElement.appendChild(debtElement);
-		
+
 		System.out.println(docToString(database));
-		
+
 	}
 
 	public void run() {
 		String requestType = "";
 		System.out.println("Before - connected = " + connected);
+		getData();
 		while (connected) {
 			try {
 				request = (Document) ois.readObject();
@@ -138,7 +138,7 @@ public class UserService extends Service {
 		Element orderElement = responses.createElement("print");
 		orderElement.appendChild(responses.createTextNode("Ordered successfully"));
 		rootElement.appendChild(orderElement);
-		
+
 		fileManager.saveAs(database, "database.xml");
 
 		oos.reset();
@@ -164,26 +164,40 @@ public class UserService extends Service {
 	}
 
 	private void pay() throws IOException {
-		
+
 		debt = 0.0;
 		debtElement.setTextContent(Double.toString(debt));
-		
+
 		Element leaveElement = responses.createElement("print");
 		leaveElement.appendChild(responses.createTextNode("Paid"));
 		rootElement.appendChild(leaveElement);
-		
+
 		oos.reset();
 		oos.writeObject(responses);
 	}
 
 	private void leave() throws IOException {
 		connected = false;
-		
+
 		Element leaveElement = responses.createElement("print");
 		leaveElement.appendChild(responses.createTextNode("Ok"));
 		rootElement.appendChild(leaveElement);
-		
+
 		oos.reset();
 		oos.writeObject(responses);
+	}
+
+	private void getData() {
+		try {
+			Document d = (Document) ois.readObject();
+			String s = (String) xPath.compile("string(//data/@birthday)").evaluate(d, XPathConstants.STRING);
+			// Element a = (Element) (d.getDocumentElement());
+			// userElement.setAttribute("birthday", a.getAttribute("birthday"));
+			userElement.setAttribute("birthday", s);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 }
