@@ -25,12 +25,12 @@ public class Waiter extends Client {
 
 		while (connected) {
 			requests = createRequestDocument();
-
+			System.out.println("========================\n");
 			System.out.println("Choose a command:\n");
 			System.out.println("\t 1. Check orders");
 			System.out.println("\t 2. Modify status.");
 			System.out.println("\t 3. Check aniversary.");
-			System.out.println("\t 4. Leave \n>> ");
+			System.out.print("\t 4. Leave \n>> ");
 			int choice = keyboard.nextInt();
 			switch (choice) {
 			case 1:
@@ -151,7 +151,7 @@ public class Waiter extends Client {
 			} else {
 				confirmation = "IS NOT";
 			}
-			System.out.println("It" + confirmation + "user[" + cid + "]'s birthday.");
+			System.out.println(">>>> It " + confirmation + " user[" + cid + "]'s birthday.");
 		} catch (InputMismatchException e) {
 			System.out.println("Please introduce a valid INTEGER id.");
 		} catch (IOException e) {
