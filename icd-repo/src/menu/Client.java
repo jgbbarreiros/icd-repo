@@ -52,7 +52,7 @@ public abstract class Client {
 			login();
 			request();
 		} catch (ConnectException e) {
-			System.out.println("There is no server listenning. \n Leaving.");
+			System.out.println("There is no server listenning. \nLeaving...");
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {

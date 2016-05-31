@@ -117,7 +117,7 @@ public class Waiter extends Client {
 			o.setAttribute("id", oid); // order id attribute
 			o.setAttribute("status", status); // order status
 			oos.writeObject(requests);
-
+			System.out.println(docToString(requests));
 			Document d = (Document) ois.readObject();
 			System.out.println(docToString(d));
 			String confirmation = (String) xPath.compile("string(//order/@status)").evaluate(d, XPathConstants.STRING);
@@ -129,6 +129,7 @@ public class Waiter extends Client {
 		} catch (Exception e1) {
 			System.out.println("Exception caught in Waiter.update.");
 		}
+		
 	}
 
 	public void aniversary() {

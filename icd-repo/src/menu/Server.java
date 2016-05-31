@@ -48,18 +48,15 @@ public class Server {
 
 	private void launch() throws IOException {
 		serverSocket = new ServerSocket(DEFAULT_PORT);
-
+		System.out.println("Server listening on localhost:" + DEFAULT_PORT + "...");
 		while (true) {
 			try {
-
-				System.out.println("Server listening on localhost:" + DEFAULT_PORT + "...");
 				service = serverSocket.accept();
 				openStreams();
 				Thread th;
 				switch (getClientType((Document) ois.readObject())) {
 				case "user":
 					th = new UserService(service, ois, oos, menu, database);
-					System.out.println("Creating UserService.");
 					break;
 				case "waiter":
 					th = new WaiterService(service, ois, oos, menu, database);
@@ -83,7 +80,6 @@ public class Server {
 		ois = new ObjectInputStream(service.getInputStream());
 		oos = new ObjectOutputStream(service.getOutputStream());
 		oos.flush();
-		System.out.println("Connection made with client...");
 	}
 
 	protected void closeStreams() {

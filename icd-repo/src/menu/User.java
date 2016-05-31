@@ -32,7 +32,6 @@ public class User extends Client {
 
 	@Override
 	public void request() {
-		System.out.println("User request connected = " + connected);
 		sendData();
 		while (connected) {
 			try {
@@ -106,7 +105,6 @@ public class User extends Client {
 			type = calendar.get(Calendar.HOUR_OF_DAY) < 19 ? "lunch" : "dinner";
 			weekday = calendar.get(Calendar.DAY_OF_WEEK) > 6 || calendar.get(Calendar.DAY_OF_WEEK) == 1 ? "restday"
 					: "weekday";
-			System.out.println(calendar.get(Calendar.DAY_OF_WEEK));
 			menu = requestMenu(language, type, weekday);
 			showMenu(menu);
 			break;
@@ -115,7 +113,6 @@ public class User extends Client {
 			type = cal.get(Calendar.HOUR_OF_DAY) < 19 ? "lunch" : "dinner";
 			weekday = calendar.get(Calendar.DAY_OF_WEEK) > 6 || calendar.get(Calendar.DAY_OF_WEEK) == 1 ? "restday"
 					: "weekday";
-			System.out.println(cal.get(Calendar.DAY_OF_WEEK));
 			showMenu(requestMenu(language, type, weekday));
 			break;
 		case 3:
@@ -153,9 +150,7 @@ public class User extends Client {
 
 	private void showMenu(Document menu) {
 		// TODO after menu response
-		DOMImplementationLS domImplementation = (DOMImplementationLS) menu.getImplementation();
-		LSSerializer lsSerializer = domImplementation.createLSSerializer();
-		System.out.println(lsSerializer.writeToString(menu));
+		System.out.println(docToString(menu));
 	}
 
 	private void order() throws DOMException, XPathExpressionException, IOException, ClassNotFoundException {
@@ -184,6 +179,7 @@ public class User extends Client {
 
 	private void showOrder(Document order) {
 		// TODO after order response
+		System.out.println(docToString(order));
 	}
 
 	private void check() throws IOException, ClassNotFoundException {
@@ -196,10 +192,6 @@ public class User extends Client {
 		Element debt = requests.createElement("debt");
 		check.appendChild(debt);
 
-		DOMImplementationLS domImplementation = (DOMImplementationLS) requests.getImplementation();
-		LSSerializer lsSerializer = domImplementation.createLSSerializer();
-		System.out.println(lsSerializer.writeToString(requests));
-
 		oos.reset();
 		oos.writeObject(requests);
 		showCheck((Document) ois.readObject());
@@ -207,9 +199,7 @@ public class User extends Client {
 
 	private void showCheck(Document check) {
 		// TODO after check response
-		DOMImplementationLS domImplementation = (DOMImplementationLS) check.getImplementation();
-		LSSerializer lsSerializer = domImplementation.createLSSerializer();
-		System.out.println(lsSerializer.writeToString(check));
+		System.out.println(docToString(check));
 		fileManager.saveAs(check, "check.xml");
 	}
 
@@ -268,7 +258,6 @@ public class User extends Client {
 		}
 		data.setAttribute("birthday", input);
 		d.appendChild(data);
-		System.out.println(docToString(d));
 		try {
 			oos.writeObject(d);
 		} catch (Exception e) {

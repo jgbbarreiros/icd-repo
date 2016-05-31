@@ -1,6 +1,7 @@
 package menu;
 
 import java.io.EOFException;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -53,13 +54,11 @@ public class WaiterService extends Service {
 	}
 
 	protected String getRequestType(Document request) {
-		System.out.println("GETTING REQUEST TYPE.");
-		System.out.println(docToString(request));
 		return request.getDocumentElement().getFirstChild().getNodeName();
 	}
 
 	private void orders() {
-		System.out.println("RETURNING ORDERS");
+		System.out.println("\nRETURNING ORDERS");
 		try {
 			oos.reset();
 			oos.writeObject(database);
@@ -69,13 +68,14 @@ public class WaiterService extends Service {
 	}
 
 	public void update(Document d) {
-		System.out.println("RETURNING UPDATE");
+		System.out.println("\nRETURNING UPDATE");
 
 		try {
 			String userId = (String) xPath.compile("string(//user/@id)").evaluate(d, XPathConstants.STRING);
 			String orderId = (String) xPath.compile("string(//order/@id)").evaluate(d, XPathConstants.STRING);
 			String newStatus = (String) xPath.compile("string(//order/@status)").evaluate(d, XPathConstants.STRING);
-			String currentStatus = (String) xPath.compile("string(//user[@id = '0']/order[@id='1']/@status)")
+			String currentStatus = (String) xPath
+					.compile("string(//user[@id = \"" + userId + "\"]/order[@id=\"" + orderId + "\"]/@status)")
 					.evaluate(database, XPathConstants.STRING);
 
 			System.out.println("Attempting to change user id=\"" + userId + "\" order=\"" + orderId
@@ -85,7 +85,6 @@ public class WaiterService extends Service {
 			Element e = (Element) xPath.compile(expression).evaluate(database, XPathConstants.NODE);
 			e.setAttribute("status", newStatus);
 
-			System.out.println(docToString(database));
 			Element u = responses.createElement("user");
 			Element o = responses.createElement("order");
 			u.setAttribute("id", userId);
@@ -96,13 +95,14 @@ public class WaiterService extends Service {
 			oos.writeObject(responses);
 		} catch (XPathException e) {
 			System.out.println("Couldnt get element.");
-		} catch (Exception e) {
+		} catch (IOException e1) {
+			e1.printStackTrace();
 			System.out.println("Error while updating a status in WaiterService.update.");
 		}
 	}
 
 	public void aniversary(Document d) {
-		System.out.println("RETURNING ANIVERSARY");
+		System.out.println("\nRETURNING ANIVERSARY");
 		try {
 			String userId = (String) xPath.compile("string(//user/@id)").evaluate(d, XPathConstants.STRING);
 			String expression = "string(//user[@id = \"" + userId + "\"]/@birthday)";

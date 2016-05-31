@@ -27,6 +27,7 @@ public class UserService extends Service {
 		debt = 0.0;
 		orderId = 0;
 		createUserEntry();
+		System.out.println("User " + userId + " connected");
 	}
 
 	private void createUserEntry() {
@@ -39,14 +40,10 @@ public class UserService extends Service {
 		debtElement = database.createElement("debt");
 		debtElement.appendChild(database.createTextNode(Double.toString(debt)));
 		userElement.appendChild(debtElement);
-
-		System.out.println(docToString(database));
-
 	}
 
 	public void run() {
 		String requestType = "";
-		System.out.println("Before - connected = " + connected);
 		getData();
 		while (connected) {
 			try {
@@ -77,8 +74,14 @@ public class UserService extends Service {
 					break;
 				}
 
-			} catch (Exception e) {
-				System.err.println("User sevice while " + e.getMessage());
+			} catch (ClassNotFoundException e) {
+				log("Did not receive XML");
+				connected = false;
+			} catch (IOException e) {
+				log("User disconnected unexpectedly");
+				connected = false;
+			} catch (XPathExpressionException e) {
+				log("Incorrect XML document received");
 				connected = false;
 			}
 		}
@@ -188,16 +191,24 @@ public class UserService extends Service {
 	}
 
 	private void getData() {
-		try {
-			Document d = (Document) ois.readObject();
-			String s = (String) xPath.compile("string(//data/@birthday)").evaluate(d, XPathConstants.STRING);
-			// Element a = (Element) (d.getDocumentElement());
-			// userElement.setAttribute("birthday", a.getAttribute("birthday"));
-			userElement.setAttribute("birthday", s);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+			Document d;
+			try {
+				d = (Document) ois.readObject();
+				String s = (String) xPath.compile("string(//data/@birthday)").evaluate(d, XPathConstants.STRING);
+				userElement.setAttribute("birthday", s);
+			} catch (ClassNotFoundException e) {
+				log("Did not receive XML");
+				connected = false;
+			} catch (IOException e) {
+				log("User disconnected unexpectedly");
+				connected = false;
+			} catch (XPathExpressionException e) {
+				log("Incorrect XML document received");
+				connected = false;
+			}
+	}
+	
+	private void log(String message) {
+		System.out.println("User Service " + userId + ": "  + message);
 	}
 }
