@@ -19,7 +19,6 @@ public class User extends Client {
 	private Document menu;
 	private Calendar calendar;
 	private Date date;
-	private String language;
 	private Scanner keyboard;
 
 	public User() {
@@ -29,7 +28,6 @@ public class User extends Client {
 		date = new Date();
 		calendar = Calendar.getInstance();
 		calendar.setTime(date);
-		language = "en";
 	}
 
 	@Override
@@ -78,8 +76,29 @@ public class User extends Client {
 	}
 
 	private void menu() throws ClassNotFoundException, IOException {
-
-		menuOptions(new String[] { "Current date", "Other date", "Back" });
+		
+		// choose language
+		menuOptions(new String[] { "english", "português", "français", "Exit" });
+		String language = null;
+		switch (keyboard.nextInt()) {
+		case 1:
+			language = "en";
+			break;
+		case 2:
+			language = "pt";
+			break;
+		case 3:
+			language = "fr";
+			break;
+		case 4:
+			return;
+		default:
+			System.out.println("Please choose a valid option.");
+			break;
+		}
+		
+		// choose date
+		menuOptions(new String[] { "Current date", "Other date", "Exit" });
 		String type = null;
 		String weekday = null;
 		switch (keyboard.nextInt()) {
@@ -88,7 +107,7 @@ public class User extends Client {
 			weekday = calendar.get(Calendar.DAY_OF_WEEK) > 6 || calendar.get(Calendar.DAY_OF_WEEK) == 1 ? "restday"
 					: "weekday";
 			System.out.println(calendar.get(Calendar.DAY_OF_WEEK));
-			menu = requestMenu(type, weekday);
+			menu = requestMenu(language, type, weekday);
 			showMenu(menu);
 			break;
 		case 2:
@@ -97,7 +116,7 @@ public class User extends Client {
 			weekday = calendar.get(Calendar.DAY_OF_WEEK) > 6 || calendar.get(Calendar.DAY_OF_WEEK) == 1 ? "restday"
 					: "weekday";
 			System.out.println(cal.get(Calendar.DAY_OF_WEEK));
-			showMenu(requestMenu(type, weekday));
+			showMenu(requestMenu(language, type, weekday));
 			break;
 		case 3:
 			return;
@@ -121,7 +140,7 @@ public class User extends Client {
 		return cal;
 	}
 
-	private Document requestMenu(String type, String weekday) throws IOException, ClassNotFoundException {
+	private Document requestMenu(String language, String type, String weekday) throws IOException, ClassNotFoundException {
 		Element menu = requests.createElement("menu");
 		menu.setAttribute("language", language);
 		menu.setAttribute("type", type);
