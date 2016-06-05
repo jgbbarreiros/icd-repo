@@ -1,18 +1,15 @@
 package menu;
 
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSSerializer;
 
 public class User extends Client {
 
@@ -34,52 +31,56 @@ public class User extends Client {
 	public void request() {
 		sendData();
 		while (connected) {
-			try {
-				System.out.println("\n============================");
-				System.out.println(calendar.getTime());
-				menuOptions(new String[] { "Request Menu", "Order", "Check order", "Pay order", "Leave" });
-				switch (keyboard.nextInt()) {
-				case 1:
-					menu();
-					break;
-				case 2:
-					order();
-					break;
-				case 3:
-					check();
-					break;
-				case 4:
-					pay();
-					break;
-				case 5:
-					leave();
-					connected = false;
-					System.out.println("Bye");
-					break;
-				default:
-					System.out.println("Please choose a valid option.");
-					break;
-				}
-			} catch (Exception e) {
-				System.err.println(e.getMessage());
+			requests = createRequestDocument();
+			System.out.println("\n============================");
+			System.out.println(calendar.getTime());
+			menuOptions(new String[] { "Request Menu", "Order", "Check order", "Pay order", "Leave" });
+			switch (readInput()) {
+			case 1:
+				menu();
+				break;
+			case 2:
+				order();
+				break;
+			case 3:
+				check();
+				break;
+			case 4:
+				pay();
+				break;
+			case 5:
+				leave();
 				connected = false;
+				System.out.println("Bye");
+				break;
+			default:
+				System.out.println("Please choose a valid option.");
+				break;
 			}
 		}
 		keyboard.close();
 	}
 
+	private int readInput() {
+		try {
+			return keyboard.nextInt();
+		} catch (InputMismatchException e) {
+			keyboard.nextLine();
+			return 0;
+		}
+	}
+
 	public static void main(String[] args) {
 		User user = new User();
-		// user.request();
 		user.connect();
 	}
 
-	private void menu() throws ClassNotFoundException, IOException {
-		
+	private void menu() {
+
 		// choose language
-		menuOptions(new String[] { "english", "português", "français", "Exit" });
+		menuOptions(new String[] { "english", "português", "français", "Cancel" });
 		String language = null;
-		switch (keyboard.nextInt()) {
+		switch (readInput()) {
 		case 1:
 			language = "en";
 			break;
@@ -95,25 +96,17 @@ public class User extends Client {
 			System.out.println("Please choose a valid option.");
 			break;
 		}
-		
+
 		// choose date
-		menuOptions(new String[] { "Current date", "Other date", "Exit" });
-		String type = null;
-		String weekday = null;
-		switch (keyboard.nextInt()) {
+		menuOptions(new String[] { "Current date", "Other date", "Cancel" });
+		switch (readInput()) {
 		case 1:
-			type = calendar.get(Calendar.HOUR_OF_DAY) < 19 ? "lunch" : "dinner";
-			weekday = calendar.get(Calendar.DAY_OF_WEEK) > 6 || calendar.get(Calendar.DAY_OF_WEEK) == 1 ? "restday"
-					: "weekday";
-			menu = requestMenu(language, type, weekday);
+			menu = requestMenu(language, getType(calendar), getWeekday(calendar));
 			showMenu(menu);
 			break;
 		case 2:
 			Calendar cal = setDate();
-			type = cal.get(Calendar.HOUR_OF_DAY) < 19 ? "lunch" : "dinner";
-			weekday = calendar.get(Calendar.DAY_OF_WEEK) > 6 || calendar.get(Calendar.DAY_OF_WEEK) == 1 ? "restday"
-					: "weekday";
-			showMenu(requestMenu(language, type, weekday));
+			showMenu(requestMenu(language, getType(cal), getWeekday(cal)));
 			break;
 		case 3:
 			return;
@@ -137,23 +130,30 @@ public class User extends Client {
 		return cal;
 	}
 
-	private Document requestMenu(String language, String type, String weekday) throws IOException, ClassNotFoundException {
+	private String getType(Calendar cal) {
+		return cal.get(Calendar.HOUR_OF_DAY) < 19 ? "lunch" : "dinner";
+	}
+
+	private String getWeekday(Calendar cal) {
+		return calendar.get(Calendar.DAY_OF_WEEK) > 6 || calendar.get(Calendar.DAY_OF_WEEK) == 1 ? "restday"
+				: "weekday";
+	}
+
+	private Document requestMenu(String language, String type, String weekday) {
 		Element menu = requests.createElement("menu");
 		menu.setAttribute("language", language);
 		menu.setAttribute("type", type);
 		menu.setAttribute("weekday", weekday);
 		rootElement.appendChild(menu);
-		oos.reset();
-		oos.writeObject(requests);
-		return (Document) ois.readObject();
+		sendRequest(requests);
+		return getResponse();
 	}
 
 	private void showMenu(Document menu) {
-		// TODO after menu response
 		System.out.println(docToString(menu));
 	}
 
-	private void order() throws DOMException, XPathExpressionException, IOException, ClassNotFoundException {
+	private void order() {
 		if (menu == null) {
 			System.out.println("You need to request today's menu first");
 			return;
@@ -167,22 +167,25 @@ public class User extends Client {
 		String expression;
 		for (int i = 0; i < orderList.length; i++) {
 			expression = "//item[@itref='" + orderList[i] + "']";
-			Element item = (Element) xPath.compile(expression).evaluate(menu, XPathConstants.NODE);
+			Element item = null;
+			try {
+				item = (Element) xPath.compile(expression).evaluate(menu, XPathConstants.NODE);
+			} catch (XPathExpressionException e) {
+				e.printStackTrace();
+			}
 			Element itemNew = (Element) item.cloneNode(true);
 			requests.adoptNode(itemNew);
 			order.appendChild(itemNew);
 		}
-		oos.reset();
-		oos.writeObject(requests);
-		showOrder((Document) ois.readObject());
+		sendRequest(requests);
+		showOrder(getResponse());
 	}
 
 	private void showOrder(Document order) {
-		// TODO after order response
 		System.out.println(docToString(order));
 	}
 
-	private void check() throws IOException, ClassNotFoundException {
+	private void check() {
 		Element check = requests.createElement("check");
 		rootElement.appendChild(check);
 
@@ -192,47 +195,37 @@ public class User extends Client {
 		Element debt = requests.createElement("debt");
 		check.appendChild(debt);
 
-		oos.reset();
-		oos.writeObject(requests);
-		showCheck((Document) ois.readObject());
+		sendRequest(requests);
+		showCheck(getResponse());
 	}
 
 	private void showCheck(Document check) {
-		// TODO after check response
 		System.out.println(docToString(check));
-		fileManager.saveAs(check, "check.xml");
+		fileManager.saveAs(check, "check");
 	}
 
-	private void pay() throws IOException, ClassNotFoundException {
+	private void pay() {
 		Element pay = requests.createElement("pay");
 		rootElement.appendChild(pay);
 
-		oos.reset();
-		oos.writeObject(requests);
-		showPay((Document) ois.readObject());
+		sendRequest(requests);
+		showPay(getResponse());
 	}
 
-	private void showPay(Document check) {
-		// TODO after pay response
-		DOMImplementationLS domImplementation = (DOMImplementationLS) check.getImplementation();
-		LSSerializer lsSerializer = domImplementation.createLSSerializer();
-		System.out.println(lsSerializer.writeToString(check));
+	private void showPay(Document pay) {
+		System.out.println(docToString(pay));
 	}
 
-	private void leave() throws IOException, ClassNotFoundException {
+	private void leave() {
 		Element leave = requests.createElement("leave");
 		rootElement.appendChild(leave);
 
-		oos.reset();
-		oos.writeObject(requests);
-		showLeave((Document) ois.readObject());
+		sendRequest(requests);
+		showLeave(getResponse());
 	}
 
-	private void showLeave(Document check) {
-		// TODO after leave response
-		DOMImplementationLS domImplementation = (DOMImplementationLS) check.getImplementation();
-		LSSerializer lsSerializer = domImplementation.createLSSerializer();
-		System.out.println(lsSerializer.writeToString(check));
+	private void showLeave(Document leave) {
+		System.out.println(docToString(leave));
 	}
 
 	private void menuOptions(String[] options) {
@@ -258,10 +251,6 @@ public class User extends Client {
 		}
 		data.setAttribute("birthday", input);
 		d.appendChild(data);
-		try {
-			oos.writeObject(d);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		sendRequest(d);
 	}
 }

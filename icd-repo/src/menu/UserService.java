@@ -47,6 +47,7 @@ public class UserService extends Service {
 		getData();
 		while (connected) {
 			try {
+				responses = createRequestDocument();
 				request = (Document) ois.readObject();
 				requestElement = (Element) request.getDocumentElement().getLastChild();
 				requestType = getRequestType(request);
@@ -134,15 +135,12 @@ public class UserService extends Service {
 
 		debtElement.setTextContent(debt + "");
 
-		FileManager fm = new FileManager();
-		fm.save(database); // TODO update real database file
-
 		// user response
 		Element orderElement = responses.createElement("print");
 		orderElement.appendChild(responses.createTextNode("Ordered successfully"));
 		rootElement.appendChild(orderElement);
 
-		fileManager.saveAs(database, "database.xml");
+		fileManager.saveAs(database, "database");
 
 		oos.reset();
 		oos.writeObject(responses);

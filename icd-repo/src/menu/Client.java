@@ -82,6 +82,30 @@ public abstract class Client {
 		oos.flush();
 	}
 
+	protected void sendRequest(Document document) {
+		try {
+			oos.reset(); // in case it's the same document with alterations
+			oos.writeObject(document);
+		} catch (IOException e) {
+			connected = false;
+			e.printStackTrace();
+		}
+	}
+
+	protected Document getResponse() {
+		try {
+			return (Document) ois.readObject();
+		} catch (ClassNotFoundException e) {
+			connected = false;
+			e.printStackTrace();
+			return null; // TODO return error document message
+		} catch (IOException e) {
+			connected = false;
+			e.printStackTrace();
+			return null; // TODO return error document message
+		}
+	}
+
 	public abstract void request();
 
 	public String docToString(Document doc) {
